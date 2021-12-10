@@ -9,12 +9,29 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @UniqueEntity("email",message="L'email existe déjà",groups={"write_user_post",
+ *     "write_user_put"})
  */
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read_users_get']],
+    denormalizationContext: ['groups' => ['write_user_post','write_user_put']],
+    collectionOperations: [
+        'get',
+        'post' => ['validation_groups' => ['write_user_post']]
+    ],
+    itemOperations: [
+        'delete',
+        'get',
+        'put' => ['validation_groups' => ['write_user_put']]
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
@@ -25,19 +42,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     /**
+     * @Assert\NotBlank(message="L'email ne peut pas être vide",groups={"write_user_post","write_user_put"})
+     * @Assert\NotNull(message="L'email ne peut pas être null",groups={"write_user_post","write_user_put"})
+     * @Assert\Regex(pattern="/[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,4}/", match=true,
+     *     message="L'email n'est pas valide", groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=180, unique=true)
      */
+    #[Groups(['read_users_get','write_user_post','write_user_put'])]
     private $email;
 
     /**
      * @ORM\Column(type="json")
      */
+    #[Groups(['read_users_get','write_user_post','write_user_put'])]
     private $roles = [];
 
     /**
+     * @Assert\NotBlank(message="Le mot de passe ne peut pas être vide",groups={"write_user_post","write_user_put"})
+     * @Assert\NotNull(message="Le mot de passe ne peut pas être null",groups={"write_user_post","write_user_put"})
+     * @Assert\NotCompromisedPassword(groups={"write_user_post","write_user_put"})
+     * @SecurityAssert\UserPassword(message = "Mauvaise valeur pour votre mot de passe actuel",
+     * groups={"write_user_put"})
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
+    #[Groups(['read_users_get','write_user_post','write_user_put'])]
     private $password;
 
     /**
@@ -51,32 +80,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $orders;
 
     /**
+     * @Assert\NotBlank(message="Le prénom ne peut pas être vide",groups={"write_user_post","write_user_put"})
+     * @Assert\NotNull(message="Le prénom ne peut pas être null",groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read_users_get','write_user_post','write_user_put'])]
     private $firstname;
 
     /**
+     * @Assert\NotBlank(message="Le nom ne peut pas être vide",groups={"write_user_post","write_user_put"})
+     * @Assert\NotNull(message="Le nom ne peut pas être null",groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read_users_get','write_user_post','write_user_put'])]
     private $lastname;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime",nullable=true)
      */
     private $last_activity;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean",nullable=true)
      */
     private $active;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $activation_token;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime",nullable=true)
      */
     private $created_at;
 
@@ -84,6 +119,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updated_at;
+
+    /**
+     * @Assert\NotBlank(message="Le numéro de téléphone ne peut pas être vide",
+     *     groups={"write_user_post","write_user_put"})
+     * @Assert\NotNull(message="Le numéro de téléphone ne peut pas être null"
+     * ,groups={"write_user_post","write_user_put"})
+     * @ORM\Column(type="string",nullable=true)
+     */
+    #[Groups(['read_users_get','write_user_post','write_user_put'])]
+    private $phoneNumber;
 
     public function __construct()
     {
@@ -312,6 +357,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(?\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?int
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(int $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }

@@ -1,0 +1,5 @@
+App\Entity\Category:
+    category_{1..5}:
+        libelle: <randomElement(['Pizza','Boisson','Desserts','Entrées','Sauces'],1,false)>
+        created_at: <dateTimeBetween('now','')>
+        updated_at: <dateTimeBetween('now','')>

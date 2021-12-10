@@ -35,7 +35,7 @@ class Address
     private $department;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
     private $zipCode;
 

@@ -1,0 +1,25 @@
+App\Entity\User:
+    user_0:
+        email: <freeEmail(unique)>
+        firstname: <firstName()>
+        lastname: <lastName()>
+        password: <hashPassword('admin')>
+        active: <boolean(true)>
+        created_at: <dateTimeBetween('now','')>
+        updated_at: <dateTimeBetween('now','')>
+        last_activity: <dateTimeBetween('now','')>
+        
+        __calls:
+        -   setEmail: ['fastPizza@admin.com']
+        -   setRoles: [['ROLE_ADMIN']]    
+            
+    user_{1..15}:
+        email: <freeEmail(unique)>
+        firstname: <firstName()>
+        lastname: <lastName()>
+        password: <hashPassword('test')>
+        active: <boolean()>
+        created_at: <dateTimeBetween('now','')>
+        updated_at: <dateTimeBetween('now','')>
+        last_activity: <dateTimeBetween('now','')>
+        roles: <randomElements(['R0LE_CUSTOMER','ROLE_VENDOR'],1,true)>

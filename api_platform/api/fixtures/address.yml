@@ -1,0 +1,10 @@
+App\Entity\Address:
+    address_{1..15}:
+        streetNumber: <fr_FR:buildingNumber()>
+        street: <fr_FR:streetName()>
+        department: <fr_FR:departmentName()>
+        zipCode: <fr_FR:randomNumber(5, true)>
+        city: <fr_FR:city()>
+        country: <fr_FR:country('France')>
+        created_at: <dateTimeBetween('now','')>
+        updated_at: <dateTimeBetween('now','')>

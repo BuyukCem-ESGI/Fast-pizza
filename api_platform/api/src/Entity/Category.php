@@ -3,15 +3,34 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 
 /**
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
+ * @UniqueEntity("libelle",message="Le libellé existe déjà",groups={"write_category_post",
+ *     "write_category_put"})
  */
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read_categorys_get']],
+    denormalizationContext: ['groups' => ['write_category_post','write_category_put']],
+    collectionOperations: [
+        'get',
+        'post' => ['validation_groups' => ['write_category_post']]
+    ],
+    itemOperations: [
+        'delete',
+        'get',
+        'put' => ['validation_groups' => ['write_category_put']]
+    ]
+)]
 class Category
 {
     /**
@@ -22,23 +41,30 @@ class Category
     private $id;
 
     /**
+     * @Assert\NotBlank(message="Le libellé ne peut pas être vide",groups={"write_category_post",
+     *     "write_category_put"})
+     * @Assert\NotNull(message="Le libellé ne peut pas être null",groups={"write_category_post",
+     *     "write_category_put"})
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read_categorys_get','write_category_post','write_category_put'])]
     private $libelle;
 
     /**
      * @ORM\OneToMany(targetEntity=Product::class, mappedBy="category")
      */
+    #[Groups(['read_categorys_get'])]
     private $products;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime",nullable=true)
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
+    #[Groups(['write_category_put'])]
     private $updated_at;
 
     public function __construct()
