@@ -18,6 +18,7 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
  * @ORM\Table(name="`user`")
  * @UniqueEntity("email",message="L'email existe déjà",groups={"write_user_post",
  *     "write_user_put"})
+ * @method string getUserIdentifier()
  */
 #[ApiResource(
     normalizationContext: ['groups' => ['read_users_get']],
@@ -371,5 +372,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->phoneNumber = $phoneNumber;
 
         return $this;
+    }
+
+    public function __call(string $name, array $arguments)
+    {
+        // TODO: Implement @method string getUserIdentifier()
     }
 }
