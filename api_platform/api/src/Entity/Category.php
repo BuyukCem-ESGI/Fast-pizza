@@ -47,7 +47,7 @@ class Category
      *     "write_category_put"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read_categorys_get','write_category_post','write_category_put'])]
+    #[Groups(['read_categorys_get','write_category_post','write_category_put','read_products_get'])]
     private $libelle;
 
     /**

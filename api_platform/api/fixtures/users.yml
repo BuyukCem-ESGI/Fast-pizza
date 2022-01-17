@@ -11,7 +11,7 @@ App\Entity\User:
         
         __calls:
         -   setEmail: ['fastPizza@admin.com']
-        -   setRoles: [['ROLE_ADMIN']]    
+        -   setRoles: [['ROLE_ADMIN']]
             
     user_{1..15}:
         email: <freeEmail(unique)>

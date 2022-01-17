@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 
 /**
  * @ORM\Entity(repositoryClass=ProductTypeRepository::class)
@@ -45,7 +46,7 @@ class ProductType
      *     groups={"write_productType_post","write_productType_patch"})
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    #[Groups(['write_productType_post','write_productType_patch','read_productTypes_get'])]
+    #[Groups(['write_productType_post','write_productType_patch','read_productTypes_get','read_products_get'])]
     private $name;
 
     /**
@@ -61,7 +62,9 @@ class ProductType
     /**
      * @ORM\ManyToMany(targetEntity=Product::class, inversedBy="productTypes")
      */
-    #[Groups(['write_productType_post','write_productType_patch','read_productsTypes_get'])]
+    #[ApiSubresource(maxDepth: 1)]
+    #[Groups(['write_productType_post','write_productType_patch'])]
+
     private $products;
 
     public function __construct()

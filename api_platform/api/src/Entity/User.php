@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -130,10 +131,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read_users_get','write_user_post','write_user_put'])]
     private $phoneNumber;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Menu::class, mappedBy="owner")
+     */
+    #[ApiSubresource(maxDepth: 1)]
+    private $menus;
+
     public function __construct()
     {
         $this->carts = new ArrayCollection();
         $this->orders = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -369,6 +377,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhoneNumber(int $phoneNumber): self
     {
         $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Menu[]
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): self
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+            $menu->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): self
+    {
+        if ($this->menus->removeElement($menu)) {
+            // set the owning side to null (unless already changed)
+            if ($menu->getOwner() === $this) {
+                $menu->setOwner(null);
+            }
+        }
 
         return $this;
     }
