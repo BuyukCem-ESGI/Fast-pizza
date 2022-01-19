@@ -21,12 +21,14 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     denormalizationContext: ['groups' => ['write_product_post','write_product_patch']],
     collectionOperations: [
         'get',
-        'post' => ['validation_groups' => ['write_product_post']]
+        'post' => ['validation_groups' => ['write_product_post'],
+                    "security" => "is_granted('ROLE_EDITEUR')"]
     ],
     itemOperations: [
-        'delete',
+        'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
         'get',
-        'patch' => ['validation_groups' => ['write_product_patch']]
+        'patch' => ['validation_groups' => ['write_product_patch'],
+                     "security" => "is_granted('ROLE_EDITEUR')"]
     ],
     /*subresourceOperations: [
         'api_products_types_products_get_subresource' => [

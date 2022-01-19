@@ -1,0 +1,17 @@
+App\Entity\Product:
+    Product{1..10}:
+        name: <freeEmail(unique)>
+        description:
+        price:
+
+        
+        
+        email: <freeEmail(unique)>
+        firstname: <firstName()>
+        lastname: <lastName()>
+        password: <hashPassword('test')>
+        active: <boolean()>
+        created_at: <dateTimeBetween('now','')>
+        updated_at: <dateTimeBetween('now','')>
+        last_activity: <dateTimeBetween('now','')>
+        roles: <randomElements(['R0LE_CUSTOMER','ROLE_EDITEUR'],1,true)>

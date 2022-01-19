@@ -23,12 +23,14 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     denormalizationContext: ['groups' => ['write_category_post','write_category_put']],
     collectionOperations: [
         'get',
-        'post' => ['validation_groups' => ['write_category_post']]
+        'post' => ['validation_groups' => ['write_category_post'],
+            "security" => "is_granted('ROLE_EDITEUR')"]
     ],
     itemOperations: [
         'delete',
         'get',
-        'put' => ['validation_groups' => ['write_category_put']]
+        'put' => ['validation_groups' => ['write_category_put'],
+            "security" => "is_granted('ROLE_EDITEUR')"]
     ]
 )]
 class Category

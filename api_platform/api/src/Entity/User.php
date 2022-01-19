@@ -22,16 +22,17 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
  * @method string getUserIdentifier()
  */
 #[ApiResource(
+    #attributes: ["security" => "is_granted('R0LE_CUSTOMER')"],
     normalizationContext: ['groups' => ['read_users_get']],
     denormalizationContext: ['groups' => ['write_user_post','write_user_put']],
     collectionOperations: [
-        'get',
+        'get' => ["security" => "is_granted('ROLE_ADMIN')"],
         'post' => ['validation_groups' => ['write_user_post']]
     ],
     itemOperations: [
-        'delete',
-        'get',
-        'put' => ['validation_groups' => ['write_user_put']]
+        'delete'=> ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
+        'get'=>  ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
+        'put' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface

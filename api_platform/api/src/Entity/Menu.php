@@ -22,10 +22,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     collectionOperations: [
         'get',
         'post' => ['validation_groups' => ['write_menu_post'],
-            [ "security_post_denormalize" => "is_granted('MENU_CREATE', object)" ]]
+                   "security" => "is_granted('ROLE_EDITEUR')"]
     ],
     itemOperations: [
-        'delete',
+        'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
         'get',
         'patch' => ['validation_groups' => ['write_menu_patch']]
     ]

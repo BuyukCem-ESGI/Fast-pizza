@@ -19,15 +19,17 @@ use ApiPlatform\Core\Annotation\ApiSubresource;
  */
 #[ApiResource(
     normalizationContext: ['groups' => ['read_productTypes_get']],
-    denormalizationContext: ['groups' => ['write_productType_post','write_productType_patch']],
+    denormalizationContext: ['groups' => ['write_productType_post','write_productType_patch'],],
     collectionOperations: [
         'get',
-        'post' => ['validation_groups' => ['write_productType_post']]
+        'post' => ['validation_groups' => ['write_productType_post'],
+            "security" => "is_granted('ROLE_EDITEUR')"]
     ],
     itemOperations: [
         'delete',
         'get',
-        'patch' => ['validation_groups' => ['write_productType_patch']]
+        'patch' => ['validation_groups' => ['write_productType_patch'],
+            "security" => "is_granted('ROLE_EDITEUR')"]
     ]
 )]
 class ProductType
