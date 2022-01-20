@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
  */
 #[ApiResource(
     #attributes: ["security" => "is_granted('R0LE_CUSTOMER')"],
-    normalizationContext: ['groups' => ['read_users_get']],
+    normalizationContext: ['groups' => ['read_users_get', 'read_user_delivery']],
     denormalizationContext: ['groups' => ['write_user_post','write_user_put']],
     collectionOperations: [
         'get' => ["security" => "is_granted('ROLE_ADMIN')"],
@@ -87,7 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotNull(message="Le prénom ne peut pas être null",groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put'])]
+    #[Groups(['read_users_get','write_user_post','write_user_put','read_user_delivery'])]
     private $firstname;
 
     /**
@@ -95,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotNull(message="Le nom ne peut pas être null",groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put'])]
+    #[Groups(['read_users_get','write_user_post','write_user_put', 'read_user_delivery'])]
     private $lastname;
 
     /**
