@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use App\Controller\CreateUser;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -33,6 +34,68 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
         'delete'=> ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'get'=>  ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'put' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
+        'patch' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
+        'create_user' => [
+            'method' => 'POST',
+            'path'=> '/auth/register',
+            'controller'=> CreateUser::class,
+            'read'=> false,
+            "write"=> false,
+            'validation_groups' => ['write_user_post'],
+            'openapi_context' => [
+                'summary' => 'Create a new user',
+                'description' => 'Create a new user',
+                'consumes' => ['application/json'],
+                'produces' => ['application/json'],
+                'responses' => [
+                    '201' => [
+                        'description' => 'User created',
+                        ]
+                    ],
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'email' => [
+                                        'type' => 'string',
+                                        'example' => 'test@test.com',
+                                        'format' => 'email',
+                                        'description' => 'Email of the user',
+                                        'required' => true,
+                                        ],
+                                    'password' => [
+                                        'type' => 'string',
+                                        'example' => 'test',
+                                        'description' => 'Password of the user',
+                                        'required' => true,
+                                        ],
+                                    'firstname' => [
+                                        'type' => 'string',
+                                        'example' => 'test',
+                                        'description' => 'Firstname of the user',
+                                        'required' => true,
+                                        ],
+                                    'lastname' => [
+                                        'type' => 'string',
+                                        'example' => 'test',
+                                        'description' => 'Lastname of the user',
+                                        'required' => true,
+                                        ],
+                                    'phoneNumber'=> [
+                                        'type' => 'string',
+                                        'example' => '0612345678',
+                                        'description' => 'Phone number of the user',
+                                        'required' => true,
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ]
+        ]
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -51,14 +114,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="L'email n'est pas valide", groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put'])]
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
     private $email;
 
     /**
      * @ORM\Column(type="json")
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put'])]
-    private $roles = [];
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
+    public $roles = [];
 
     /**
      * @Assert\NotBlank(message="Le mot de passe ne peut pas être vide",groups={"write_user_post","write_user_put"})
@@ -69,7 +132,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put'])]
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
     private $password;
 
     /**
@@ -87,7 +150,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotNull(message="Le prénom ne peut pas être null",groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put','read_user_delivery'])]
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put', 'read_user_delivery'])]
     private $firstname;
 
     /**
@@ -95,7 +158,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotNull(message="Le nom ne peut pas être null",groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put', 'read_user_delivery'])]
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put', 'read_user_delivery'])]
     private $lastname;
 
     /**
@@ -130,7 +193,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * ,groups={"write_user_post","write_user_put"})
      * @ORM\Column(type="string",nullable=true)
      */
-    #[Groups(['read_users_get','write_user_post','write_user_put'])]
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
     private $phoneNumber;
 
     /**
@@ -170,7 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
