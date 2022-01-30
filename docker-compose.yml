@@ -16,6 +16,14 @@ services:
       retries: 3
       start_period: 30s
 
+  composer:
+    image: composer:1.9.0
+    command: install
+    depends_on:
+      - php
+    volumes:
+      - php_socket:/var/run/php
+
   pwa:
     build:
       context: ./api_platform/pwa

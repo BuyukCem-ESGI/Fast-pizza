@@ -18,16 +18,26 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 #[ApiResource(
     normalizationContext: ['groups' => ['read_products_get']],
-    denormalizationContext: ['groups' => ['write_product_post']],
+    denormalizationContext: ['groups' => ['write_product_post','write_product_patch']],
     collectionOperations: [
         'get',
-        'post' => ['validation_groups' => ['write_product_post']]
+        'post' => ['validation_groups' => ['write_product_post'],
+                    "security" => "is_granted('ROLE_EDITEUR')"]
     ],
     itemOperations: [
-        'delete',
+        'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
         'get',
-        'patch' => ['validation_groups' => ['write_product_patch']]
-    ]
+        'patch' => ['validation_groups' => ['write_product_patch'],
+                     "security" => "is_granted('ROLE_EDITEUR')"]
+    ],
+    /*subresourceOperations: [
+        'api_products_types_products_get_subresource' => [
+            'method' => 'GET',
+            'normalization_context' => [
+                'groups' => ['read_products_to_productsType_get_subresource'],
+            ],
+        ],
+    ],*/
 )]
 class Product
 {
@@ -45,7 +55,7 @@ class Product
      *     groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get'])]
+    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
     private $name;
 
     /**
@@ -61,7 +71,7 @@ class Product
      *     groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get'])]
+    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
     private $description;
 
     /**
@@ -72,7 +82,7 @@ class Product
      * @Assert\PositiveOrZero(groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="float")
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get'])]
+    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
     private $price;
 
     /**
@@ -85,7 +95,7 @@ class Product
      *     groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get'])]
+    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
     private $reference;
 
     /**
@@ -98,10 +108,7 @@ class Product
     #[Groups(['write_product_post','write_product_patch','read_products_get'])]
     private $category;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Menu::class, inversedBy="products")
-     */
-    private $menu;
+
 
     /**
      * @ORM\OneToMany(targetEntity=Cart::class, mappedBy="product")
@@ -111,23 +118,34 @@ class Product
     /**
      * @ORM\Column(type="datetime",nullable=true)
      */
+    #[Groups(['read_products_get'])]
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
+    #[Groups(['read_products_get'])]
     private $updated_at;
 
     /**
      * @ORM\ManyToMany(targetEntity=ProductType::class, mappedBy="products")
      */
+    #[ApiSubresource(
+        maxDepth: 1,
+    )]
     private $productTypes;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Menu::class, mappedBy="products")
+     */
+    private $menus;
 
 
     public function __construct()
     {
         $this->carts = new ArrayCollection();
         $this->productTypes = new ArrayCollection();
+        $this->menus = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -191,18 +209,6 @@ class Product
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
-
-        return $this;
-    }
-
-    public function getMenu(): ?Menu
-    {
-        return $this->menu;
-    }
-
-    public function setMenu(?Menu $menu): self
-    {
-        $this->menu = $menu;
 
         return $this;
     }
@@ -283,6 +289,33 @@ class Product
     {
         if ($this->productTypes->removeElement($productType)) {
             $productType->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Menu[]
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): self
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+            $menu->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): self
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removeProduct($this);
         }
 
         return $this;

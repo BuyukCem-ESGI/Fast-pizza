@@ -7,11 +7,29 @@ use App\Repository\MenuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=MenuRepository::class)
+ * * @UniqueEntity("name",message="Le nom du menu existe déjà",groups={"write_menu_post",
+ *     "write_menu_patch"})
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read_menus_get','read_users_get','read_products_get']],
+    denormalizationContext: ['groups' => ['write_menu_post','write_menu_patch']],
+    collectionOperations: [
+        'get',
+        'post' => ['validation_groups' => ['write_menu_post'],
+                   "security" => "is_granted('ROLE_EDITEUR')"]
+    ],
+    itemOperations: [
+        'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
+        'get',
+        'patch' => ['validation_groups' => ['write_menu_patch']]
+    ]
+)]
 class Menu
 {
     /**
@@ -24,27 +42,20 @@ class Menu
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['write_menu_post','write_menu_patch','read_menus_get'])]
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['write_menu_post','write_menu_patch','read_menus_get'])]
     private $description;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $priceHT;
-
-    /**
-     * @ORM\Column(type="float")
-     */
+    #[Groups(['write_menu_post','write_menu_patch','read_menus_get'])]
     private $priceTTC;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Product::class, mappedBy="menu")
-     */
-    private $products;
 
     /**
      * @ORM\ManyToOne(targetEntity=Cart::class, inversedBy="menus")
@@ -52,7 +63,7 @@ class Menu
     private $cart;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime",nullable=true)
      */
     private $created_at;
 
@@ -60,6 +71,20 @@ class Menu
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updated_at;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="menus")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    #[Groups(['write_menu_post','write_menu_patch','read_menus_get','read_users_get'])]
+    private $owner;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Product::class, inversedBy="menus")
+     */
+    #[Groups(['write_menu_post','write_menu_patch','read_menus_get','read_products_get'])]
+    #[ApiSubresource(maxDepth: 1)]
+    private $products;
 
     public function __construct()
     {
@@ -95,18 +120,6 @@ class Menu
         return $this;
     }
 
-    public function getPriceHT(): ?float
-    {
-        return $this->priceHT;
-    }
-
-    public function setPriceHT(float $priceHT): self
-    {
-        $this->priceHT = $priceHT;
-
-        return $this;
-    }
-
     public function getPriceTTC(): ?float
     {
         return $this->priceTTC;
@@ -115,36 +128,6 @@ class Menu
     public function setPriceTTC(float $priceTTC): self
     {
         $this->priceTTC = $priceTTC;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Product[]
-     */
-    public function getProducts(): Collection
-    {
-        return $this->products;
-    }
-
-    public function addProduct(Product $product): self
-    {
-        if (!$this->products->contains($product)) {
-            $this->products[] = $product;
-            $product->setMenu($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): self
-    {
-        if ($this->products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
-            if ($product->getMenu() === $this) {
-                $product->setMenu(null);
-            }
-        }
 
         return $this;
     }
@@ -181,6 +164,42 @@ class Menu
     public function setUpdatedAt(?\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Product[]
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): self
+    {
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): self
+    {
+        $this->products->removeElement($product);
 
         return $this;
     }

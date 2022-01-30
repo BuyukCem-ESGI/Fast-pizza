@@ -1,10 +1,12 @@
+# api/config/packages/security.yaml
 security:
-    encoders:
+    password_hashers:
+        # use your user class name here
         App\Entity\User:
-            algorithm: auto
+            # Use native password hasher, which auto-selects the best
+            # possible hashing algorithm (starting from Symfony 5.3 this is "bcrypt")
+            algorithm: bcrypt
 
-    # https://symfony.com/doc/current/security/experimental_authenticators.html
-    enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -12,22 +14,34 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            pattern: ^/_(profiler|wdt)
             security: false
         main:
-            lazy: true
+            stateless: true
+            anonymous: true
             provider: app_user_provider
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+            json_login:
+                check_path: /authentication_token
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+    role_hierarchy:
+        R0LE_CUSTOMER: ROLE_USER
+        ROLE_EDITEUR: ROLE_USER
+        ROLE_LIVREUR: ROLE_LIVREUR
+        ROLE_ADMIN: [ROLE_EDITEUR, ROLE_CUSTOMER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+        
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
+        - { path: ^/authentication_token, roles: PUBLIC_ACCESS }
+        # - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        - {path: ^/auth/register, methods: POST, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
