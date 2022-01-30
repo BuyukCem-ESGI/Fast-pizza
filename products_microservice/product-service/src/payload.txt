@@ -1,0 +1,10 @@
+{
+    "name": "pizza ananas",
+    "description": "description ananas",
+    "price": [{"taille":"medium","price":8},{"taille":"large xl","price":21}],
+    "type": "Product",
+    "choices": [
+        {"name":"type de pâte","price": 0, "requiredChoice": true,"supplements": ["61d99270c13bbec8de46f623","61d9928ec13bbec8de46f626"]},
+        {"name":"sauce","price": 0, "requiredChoice": false,"supplements": ["61d99434c13bbec8de46f629","61d99440c13bbec8de46f62c"]}
+    ]
+}
