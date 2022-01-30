@@ -7,6 +7,7 @@ const Profile = () => import("./components/Profile.vue")
 const AdminBoard = () => import("./components/AdminBoard.vue")
 const PizzeriaBoard = () => import("./components/PizzeriaBoard.vue")
 const UserBoard = () => import("./components/UserBoard.vue")
+const cart = () => import("./components/cart.vue")
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
   {
     path: "/register",
     component: Register,
+  },
+  {
+    path: "/cart",
+    name: "cart",
+    component: cart,
   },
   {
     path: "/profile",
@@ -62,7 +68,7 @@ router.beforeEach((to, from, next) => {
     const publicPages = ['/','/login', '/register', '/home'];
     const authRequired = !publicPages.includes(to.path);
     const loggedIn = localStorage.getItem('user');
-  
+
     // trying to access a restricted page + not logged in
     // redirect to login page
     if (authRequired && !loggedIn) {

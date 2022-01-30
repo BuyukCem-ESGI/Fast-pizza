@@ -4,7 +4,7 @@
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <a class="navbar-brand" href="#">Navbar</a>
+      <a class="navbar-brand" href="#">What2Eat</a>
 
       <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0 mx-auto">
@@ -25,7 +25,9 @@
             </router-link>
           </li>
           <li v-if="currentUser" class="nav-item active">
-              <router-link  to="/user" class="nav-link">User</router-link>
+              <router-link to="/cart" class="nav-link">
+                Cart
+              </router-link>
           </li>
           <li v-if="showAdminBoard" class="nav-item active">
               <router-link to="/admin" class="nav-link">Admin Board</router-link>

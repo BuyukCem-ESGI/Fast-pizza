@@ -17,7 +17,7 @@
      </select>
       </div>
       <div class="col-md-3 right-side">
-        <button class="btn bucket-btn">+</button>
+        <button class="btn bucket-btn" v-on:click="addToCart(34563)">+</button>
       </div>
     </div>
   </div>
@@ -34,7 +34,7 @@ export default {
             default: () => {}
         }
   },
-  data() {
+ data() {
       return {
         selectedValue: "Medium Classic",
         filters: ["Medium Classic", "XLarge classic"],
@@ -43,6 +43,16 @@ export default {
   methods: {
     detail() {
         alert(this.selectedValue)
+    },
+    addToCart(id) {
+      console.log(id)
+      this.$store.dispatch("cart/addToCart", {
+        id: id,
+        quantity: 1
+      }).then((data) => {
+        console.log('in set Cart then')
+        console.log(data)
+      })
     }
   },
 };
