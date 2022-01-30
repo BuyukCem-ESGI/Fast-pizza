@@ -1,0 +1,24 @@
+version: "3.4"
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./ProductCollections:/usr/local/productCollections
+    working_dir: /usr/local/productCollections
+  product:
+    image: node:lts
+    working_dir: /app
+    env_file: .env
+    volumes:
+      - ./product-service:/app
+    ports:
+      - 3000:3000
+    command: sh -c "npm i && npm run start"
+
+volumes:
+  db-data: {}

@@ -1,0 +1,22 @@
+{
+  "name": "micro-service-produit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1053.0",
+    "basic-auth": "^2.0.1",
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "ip": "^1.1.5",
+    "mongoose": "^6.0.14",
+    "multer": "^1.4.4"
+  }
+}
