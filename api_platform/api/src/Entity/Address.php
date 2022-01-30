@@ -3,13 +3,32 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\AddressRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=AddressRepository::class)
+ *
  */
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read-addresses-get']],
+    collectionOperations: [
+        'get' => ["security" => "is_granted('ROLE_ADMIN')"],
+        'post' => ['security' => "is_granted('ROLE_USER')"],
+    ],
+    itemOperations: [
+        'delete'=> ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
+
+        'get'=>  ["security" => "(is_granted('ROLE_USER') and object.getId() == user.getId()) OR
+                                    (is_granted('ROLE_LIVREUR') and object.getId() == delivery.getId())"],
+
+        'put' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"]
+    ]
+)]
 class Address
 {
     /**
@@ -22,31 +41,37 @@ class Address
     /**
      * @ORM\Column(type="integer")
      */
+    #[Groups(['read-addresses-get'])]
     private $streetNumber;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read-addresses-get'])]
     private $street;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read-addresses-get'])]
     private $department;
 
     /**
      * @ORM\Column(type="string")
      */
+    #[Groups(['read-addresses-get'])]
     private $zipCode;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read-addresses-get'])]
     private $city;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(['read-addresses-get'])]
     private $country;
 
     /**
@@ -58,6 +83,17 @@ class Address
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updated_at;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="adresse")
+     */
+    #[ApiSubresource(maxDepth: 1)]
+    private $orders;
+
+    public function __construct()
+    {
+        $this->orders = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -156,6 +192,36 @@ class Address
     public function setUpdatedAt(?\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Order[]
+     */
+    public function getYes(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addYe(Order $ye): self
+    {
+        if (!$this->orders->contains($ye)) {
+            $this->orders[] = $ye;
+            $ye->setAdresse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeYe(Order $ye): self
+    {
+        if ($this->orders->removeElement($ye)) {
+            // set the owning side to null (unless already changed)
+            if ($ye->getAdresse() === $this) {
+                $ye->setAdresse(null);
+            }
+        }
 
         return $this;
     }
