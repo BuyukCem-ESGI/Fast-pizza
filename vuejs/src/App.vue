@@ -15,13 +15,8 @@
             </router-link>
           </li>
           <li class="nav-item active">
-            <router-link to="/home" class="nav-link">
-                Menu
-            </router-link>
-          </li>
-          <li class="nav-item active">
-            <router-link to="/home" class="nav-link">
-                Contact
+            <router-link to="/product-form" class="nav-link">
+                products
             </router-link>
           </li>
           <li v-if="currentUser" class="nav-item active">

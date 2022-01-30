@@ -100,6 +100,7 @@ export default {
   },
   methods: {
     handleRegister(user) {
+      console.log("====== ", user)
       this.message = "";
       this.successful = false;
       this.loading = true;
