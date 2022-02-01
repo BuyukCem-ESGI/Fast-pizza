@@ -38,7 +38,7 @@ security:
         ROLE_LIVREUR: ROLE_LIVREUR
         ROLE_ADMIN: [ROLE_EDITEUR, ROLE_CUSTOMER]
         ROLE_SUPER_ADMIN: [ROLE_ADMIN]
-        
+    
     access_control:
         - { path: ^/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
         - { path: ^/authentication_token, roles: PUBLIC_ACCESS }

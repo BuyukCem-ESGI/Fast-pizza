@@ -15,6 +15,10 @@ const ProductSchema = new Schema({
       price: Number
     }
   ],
+  category: {
+    type: String,
+    required: true
+  },
   choices: [
       {
           name: String,

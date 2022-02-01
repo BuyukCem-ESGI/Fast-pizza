@@ -7,9 +7,14 @@ function respond(respCode, result, res) {
 
 
 exports.createProduct = async (req, res, next) => {
+    console.log("hello33")
     const body = req.body;
-    const imagesUrl = await aws.addImageToBucket(req)
-    const product = await Product.exists({ name: body.name });
+    const product = await Product.exists({ name: body.name }).catch(err => {
+        console.log("hello2")
+        console.log(err)
+    });
+
+    console.log(product)
     if( product) {
         respond(
             400,
@@ -17,11 +22,20 @@ exports.createProduct = async (req, res, next) => {
             res
         );
     }else {
-        body.imagesUrl = imagesUrl
+        if (req.file) {
+            try {
+                req.body.imagesUrl = await aws.addImageToBucket(req)
+            }catch (e) {
+                return res.status(500).json({
+                    message: "Error uploading image"
+                })
+            }
+        }
         const newProduct = new Product(body);
         newProduct
           .save()
           .then((product) => {
+              console.log(product);
             res.status(201).json(product);
           })
           .catch((err) => {

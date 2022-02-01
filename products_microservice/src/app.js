@@ -17,11 +17,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 
-app.all('/users',[isAuth.verifyAuthorization,isAuth.isAdmin])
-app.all('/users/*',[isAuth.verifyAuthorization,isAuth.isAdmin])
+app.all('/users')
+app.all('/users/*')
 userRoute(app)
 
-app.use(isAuth.verifyAuthorization);
+//app.use(isAuth.verifyAuthorization);
 productRoute(app)
 supplementRoute(app)
 

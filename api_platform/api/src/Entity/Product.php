@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\ProductController;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,8 +22,61 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     denormalizationContext: ['groups' => ['write_product_post','write_product_patch']],
     collectionOperations: [
         'get',
-        'post' => ['validation_groups' => ['write_product_post'],
-                    "security" => "is_granted('ROLE_EDITEUR')"]
+        'post_product'=>[
+            'method'=>'POST',
+            'path'=>'/products',
+            'controller'=>ProductController::class,
+            'security'=>"is_granted('ROLE_EDITEUR')",
+            'validation_groups'=>['write_product_patch','write_product_post'],
+            'read'=>false,
+            'write'=>false,
+            "openapi_context"=>[
+                "summary"=>"Création d'un produit",
+                "description"=>"Création d'un produit",
+                "consumes"=>["application/json"],
+                "produces"=>["application/json"],
+                "responses"=>[
+                    "201"=>[
+                        "description"=>"Voici la desc de mon prodit",
+                        ]
+                    ],
+                "requestBody"=>[
+                    'content'=>[
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => [
+                                        'type' => 'string',
+                                        'example' => 'Produit 1',
+                                    ],
+                                    'description' => [
+                                        'type' => 'string',
+                                        'example' => 'Description du produit 1',
+                                    ],
+                                    'price' => [
+                                        'type' => 'number',
+                                        'example' => '10',
+                                    ],
+                                    'image' => [
+                                        'type' => 'string',
+                                        'example' => 'http://image.jpg',
+                                    ],
+                                    'categories' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            'type' => 'string',
+                                            'example' => 'categorie 1',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        ]
+                    ]
+                ]
+
+        ],
     ],
     itemOperations: [
         'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
@@ -108,8 +162,12 @@ class Product
     #[Groups(['write_product_post','write_product_patch','read_products_get'])]
     private $category;
 
-
-
+    /**
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
+    private $imageUrl;
     /**
      * @ORM\OneToMany(targetEntity=Cart::class, mappedBy="product")
      */
@@ -199,6 +257,22 @@ class Product
         $this->reference = $reference;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    /**
+     * @param mixed $imageUrl
+     */
+    public function setImageUrl(string $imageUrl): void
+    {
+        $this->imageUrl = $imageUrl;
     }
 
     public function getCategory(): ?Category
