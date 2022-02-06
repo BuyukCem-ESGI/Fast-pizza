@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\ImageProductController;
 use App\Controller\ProductController;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Faker\Provider\Image;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -18,8 +20,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     "write_product_put"})
  */
 #[ApiResource(
-    normalizationContext: ['groups' => ['read_products_get']],
-    denormalizationContext: ['groups' => ['write_product_post','write_product_patch']],
     collectionOperations: [
         'get',
         'post_product'=>[
@@ -27,56 +27,91 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             'path'=>'/products',
             'controller'=>ProductController::class,
             'security'=>"is_granted('ROLE_EDITEUR')",
-            'validation_groups'=>['write_product_patch','write_product_post'],
             'read'=>false,
             'write'=>false,
             "openapi_context"=>[
                 "summary"=>"Création d'un produit",
                 "description"=>"Création d'un produit",
-                "consumes"=>["application/json"],
+                "consumes"=>["multipart/form-data"],
                 "produces"=>["application/json"],
                 "responses"=>[
                     "201"=>[
-                        "description"=>"Voici la desc de mon prodit",
+                        "description"=>"Voici la desc de mon produit",
                         ]
-                    ],
+                    ]
+                ],
                 "requestBody"=>[
                     'content'=>[
-                        'application/json' => [
-                            'schema' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'name' => [
-                                        'type' => 'string',
-                                        'example' => 'Produit 1',
+                        'multipart/form-data'=>[
+                            'schema'=>[
+                                'type'=>'object',
+                                'properties'=>[
+                                    'name'=>[
+                                        'type'=>'string',
+                                        'description'=>'Nom du produit',
+                                        'example'=>'Produit 1',
+                                        'format'=>'string',
+                                        'maxLength'=>255,
+                                        'minLength'=>1,
                                     ],
-                                    'description' => [
-                                        'type' => 'string',
-                                        'example' => 'Description du produit 1',
-                                    ],
-                                    'price' => [
-                                        'type' => 'number',
-                                        'example' => '10',
-                                    ],
-                                    'image' => [
-                                        'type' => 'string',
-                                        'example' => 'http://image.jpg',
-                                    ],
-                                    'categories' => [
-                                        'type' => 'array',
-                                        'items' => [
-                                            'type' => 'string',
-                                            'example' => 'categorie 1',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
+                                    'description'=>[
+                                        'type'=>'string',
+                                        'description'=>'Description du produit',
+                                        'example'=>'Ceci est un produit',
+                                        'format'=>'string',
+                                        'maxLength'=>255,
+                                        'minLength'=>1,
+                                    ]
+                                ]
+                            ]
                         ]
                     ]
                 ]
-
         ],
+        'post_product_image' =>[
+            'method'=>'POST',
+            'path'=>'/products/{id}/images',
+            'controller'=>ImageProductController::class,
+            'security'=>"is_granted('ROLE_EDITEUR')",
+            'validation_groups'=>['write_product_patch'],
+            'read'=>false,
+            'write'=>false,
+            "openapi_context"=>[
+                "summary"=>"Création d'une image pour un produit",
+                "description"=>"Création d'une image pour un produit",
+                "consumes"=>["multipart/form-data"],
+                "produces"=>["application/json"],
+                "responses"=>[
+                    "201"=>[
+                        "description"=>"Voici l'image du product",
+                    ]
+                ],
+                "requestBody"=>[
+                    'content'=>[
+                        'multipart/form-data' => [
+                            'schema'=>[
+                                'type'=>'object',
+                                'properties'=>[
+                                    'file'=>[
+                                        'type'=>'string',
+                                        'format'=> 'binary'
+                                    ],
+                                    'Image product'=>[
+                                        'type'=>'string',
+                                        'example'=>'Image produit',
+                                        'description'=>'Image produit',
+                                        'format'=>'string',
+                                        'maxLength'=>255,
+                                        'minLength'=>3,
+                                        'pattern'=>'^[a-zA-Z0-9]*$'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
     ],
     itemOperations: [
         'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
@@ -84,6 +119,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
         'patch' => ['validation_groups' => ['write_product_patch'],
                      "security" => "is_granted('ROLE_EDITEUR')"]
     ],
+    denormalizationContext: ['groups' => ['write_product_post','write_product_patch']],
     /*subresourceOperations: [
         'api_products_types_products_get_subresource' => [
             'method' => 'GET',
@@ -153,16 +189,6 @@ class Product
     private $reference;
 
     /**
-     * @Assert\NotBlank(message="La catégorie du produit ne peut pas être vide",
-     *     groups={"write_product_post","write_product_patch"})
-     * @Assert\NotNull(message="La catégorie du produit ne peut pas être null",
-     *     groups={"write_product_post","write_product_patch"})
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="products")
-     */
-    #[Groups(['write_product_post','write_product_patch','read_products_get'])]
-    private $category;
-
-    /**
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
@@ -198,6 +224,26 @@ class Product
      */
     private $menus;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $idExt;
+
+    /**
+     * @return mixed
+     */
+    public function getIdExt()
+    {
+        return $this->idExt;
+    }
+
+    /**
+     * @param mixed $idExt
+     */
+    public function setIdExt($idExt): void
+    {
+        $this->idExt = $idExt;
+    }
 
     public function __construct()
     {
@@ -247,7 +293,7 @@ class Product
         return $this;
     }
 
-    public function getReference(): ?string
+    public function Reference(): ?string
     {
         return $this->reference;
     }
@@ -273,18 +319,6 @@ class Product
     public function setImageUrl(string $imageUrl): void
     {
         $this->imageUrl = $imageUrl;
-    }
-
-    public function getCategory(): ?Category
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?Category $category): self
-    {
-        $this->category = $category;
-
-        return $this;
     }
 
     /**

@@ -1,7 +1,8 @@
 const productController = require('../controllers/productController');
-var multer  = require('multer');
 
-var storage = multer.memoryStorage({
+let multer  = require('multer');
+
+let storage = multer.memoryStorage({
     destination: function(req, file, callback) {
         callback(null, '');
     }
@@ -16,4 +17,6 @@ module.exports = (app) => {
     app.route('/products')
         .get(productController.getAllProducts)
         .post(upload,productController.createProduct)
+    app.route('/products/:id')
+        .post(upload,productController.addImageToBucket)
 }

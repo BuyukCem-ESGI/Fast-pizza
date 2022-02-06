@@ -25,3 +25,9 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Providers\FixturesProvider:
         tags: [ { name: nelmio_alice.faker.provider } ]
+    
+    App\EventListener\DeserializeListener:
+        tags: 
+            - {name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest', priority: 2}
+        decorates: "api_platform.listener.request.deserialize"
+        autoconfigure: false

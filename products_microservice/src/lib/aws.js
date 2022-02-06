@@ -4,7 +4,7 @@ exports.addImageToBucket = async (req) => {
     const file = req.file;
     const extension = "."+file.mimetype.split("/")[1];
     const filename = Date.parse(new Date())+extension;
-    file_path = '';
+
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: filename,
