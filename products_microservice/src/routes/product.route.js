@@ -17,6 +17,4 @@ module.exports = (app) => {
     app.route('/products')
         .get(productController.getAllProducts)
         .post(upload,productController.createProduct)
-    app.route('/products/:id')
-        .post(upload,productController.addImageToBucket)
 }

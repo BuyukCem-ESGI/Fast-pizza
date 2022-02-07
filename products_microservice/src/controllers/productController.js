@@ -8,36 +8,31 @@ function respond(respCode, result, res) {
 
 
 exports.createProduct = async (req, res, next) => {
-    console.log("hello33")
     const body = req.body;
-    console.log("Hekkio",req.body)
-    const product = await Product.exists({ name: body.name }).catch(err => {
-        console.log("hello2")
-        console.log(err)
-    });
-
-    if(product) {
+    const imagesUrl = await aws.addImageToBucket(req)
+    const product = await Product.exists({ name: body.name });
+    if( product) {
         respond(
             400,
             {status: 'error',message: 'product name already exist'},
             res
         );
     }else {
+        body.imagesUrl = imagesUrl
         const newProduct = new Product(body);
         newProduct
-          .save()
-          .then((product) => {
-              console.log(product);
-              res.status(201).json(product);
-          })
-          .catch((err) => {
-            if (err.name === "ValidationError") {
-              res.status(400).json(err);
-            } else {
-              console.error(err);
-              res.sendStatus(500);
-            }
-          });
+            .save()
+            .then((product) => {
+                res.status(201).json(product);
+            })
+            .catch((err) => {
+                if (err.name === "ValidationError") {
+                    res.status(400).json(err);
+                } else {
+                    console.error(err);
+                    res.sendStatus(500);
+                }
+            });
     }
 }
 

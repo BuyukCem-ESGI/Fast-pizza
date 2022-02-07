@@ -11,7 +11,7 @@ class AuthService {
             })
             .then(response => {
                 if (response.status === 200) {
-                    localStorage.setItem("user", JSON.stringify(response.data));
+                    localStorage.setItem("user", response.data.token);
                     resolve({message: "Success"});
                 }
                 if (response.status === 401) {

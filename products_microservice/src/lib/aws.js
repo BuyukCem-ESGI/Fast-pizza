@@ -1,14 +1,16 @@
-var AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
 
 exports.addImageToBucket = async (req) => {
-    const file = req.file;
-    const extension = "."+file.mimetype.split("/")[1];
-    const filename = Date.parse(new Date())+extension;
+    const file = req.body.image;
+    const base64Data = new Buffer.from(file.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+    const type = file.split(';')[0].split('/')[1];
 
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: filename,
-        Body: file.buffer,
+        Key: randomString(),
+        Body: base64Data,
+        ContentEncoding: 'base64',
+        ContentType: 'image/'+type,
         ACL: 'public-read'
     }
 
@@ -26,4 +28,11 @@ exports.addImageToBucket = async (req) => {
             }
         });
     });
+}
+function randomString() {
+    length = 80 ;
+    chars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
 }

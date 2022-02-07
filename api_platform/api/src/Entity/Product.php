@@ -170,7 +170,7 @@ class Product
      * @Assert\NotNull(message="Le prix du produit ne peut pas être null",
      *     groups={"write_product_post","write_product_patch"})
      * @Assert\PositiveOrZero(groups={"write_product_post","write_product_patch"})
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="array")
      */
     #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
     private $price;
@@ -277,19 +277,17 @@ class Product
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
         return $this;
     }
 
-    public function getPrice(): ?float
+    public function getPrice(): ?array
     {
         return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(array $price): self
     {
         $this->price = $price;
-
         return $this;
     }
 

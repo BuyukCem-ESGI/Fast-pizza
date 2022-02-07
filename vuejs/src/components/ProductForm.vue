@@ -109,17 +109,18 @@ export default {
       if (this.name.trim().length <= 0) this.showValidError.push("Add the name")
       if (this.description.trim().length <= 0) this.showValidError.push("Add the description")
       if (this.taillesData.length <= 0) this.showValidError.push("Add size and price")
-      if(this.selectedTypeValue == "Menu" && this.supplementsData.length <= 0) this.showValidError.push("Add supplement")
+      if(this.selectedTypeValue === "Menu" && this.supplementsData.length <= 0) this.showValidError.push("Add supplement")
 
       if(this.showValidError.length <= 0) {
-        let formData = new FormData()
-        formData.append('file', this.imagesArray)
-        formData.append('name', this.name)
-        formData.append('description', this.description)
-        formData.append('price', this.taillesData)
-        formData.append('type', this.selectedTypeValue)
-        formData.append('choices',this.supplementsData)
-        ProductService.addProduct(formData)
+        const jsonData = {
+          name: this.name,
+          description: this.description,
+          type: this.selectedTypeValue,
+          price: this.taillesData,
+          supplements: this.supplementsData,
+          image: this.image.toString()
+        }
+        ProductService.addProduct(jsonData)
         this.imagesArray = null
         this.name = ""
         this.description = ""
@@ -145,7 +146,7 @@ export default {
       this.createImage(files[0]);
     },
     createImage(file) {
-      var reader = new FileReader();
+      let reader = new FileReader();
       reader.onload = (e) => {
         this.image = e.target.result;
         this.imagesArray = file

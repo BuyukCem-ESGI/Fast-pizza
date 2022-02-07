@@ -23,33 +23,40 @@ class ProductController extends AbstractController
      */
     public function __invoke(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
-        $product = $request->attributes->get('data');
-
+        $dataRequest = $request->getContent();
+        $dataRequest = json_decode($dataRequest, true);
+        $dataRequest = $dataRequest['data'];
         $response = $this->client->request(
             'POST',
             'http://product:3000/products',
             [
                 'body' => [
-                    'name' => $product->getName(),
-                    'price' => array($product->getPrice()),
-                    'description' => $product->getDescription(),
+                    'name' => $dataRequest['name'],
+                    'description' => $dataRequest['description'],
+                    'image' => $dataRequest['image'],
+                    'price' => $dataRequest['price'],
                 ]
             ]
         );
-
-        if($response->getStatusCode() !== 201) {
-            return $this->json($response->getContent());
-        }else{
-
-            $content = $response->toArray();
+        dd($response->getStatusCode());
+        if($response->getStatusCode() === 201) {
             $product = new Product();
-            $product->setName($content['name']);
-            $product->setPrice($content['price']);
-            $product->setDescription($content['description']);
-            $product->setImageUrl($content['image']);
-            $product->setCategory($content['category']);
 
-            return $this->json($product);
+            $res=$response->getContent();
+            $res = json_decode($res, true);
+
+            $product->setName($res['name']);
+            $product->setDescription($res['description']);
+            $product->setImageUrl($res['imageUrl']);
+            $product->setPrice($res['price']);
+            dd($product);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($product);
+            $entityManager->flush();
+
+            return $this->json(['message' => 'Product created successfully'], 201);
+        }else {
+            return $this->json(['message' => 'Product not created'], 400);
         }
     }
 }
