@@ -19,6 +19,11 @@
                 products
             </router-link>
           </li>
+          <li class="nav-item active">
+            <router-link to="/supplement-handler" class="nav-link">
+                supplements
+            </router-link>
+          </li>
           <li v-if="currentUser" class="nav-item active">
               <router-link to="/cart" class="nav-link">
                 Cart

@@ -45,11 +45,14 @@
   </div>
     <div
         v-if="showValidError.length > 0 "
-        class="row alert-danger"
+        class="row"
+        style="margin-top: 20px;"
    >
+   <div class="col-md-9 alert-danger" style="padding-top: 10px">
     <ul v-for="(error,i) in showValidError" :key="i">
       <li>{{error}}</li>
     </ul>
+   </div>
   </div>
   <div class="row">
     <button class="btn btn-success" style="margin: 20px" @click="btnClick">{{btnTitle}}</button>

@@ -2,8 +2,12 @@
 <div class="row">
   <div class="col-md-2"></div>
   <div class="col-md-10">
-      <div class="row alert-danger" v-if="showValidError.length > 0">
-
+      <div class="row">
+      <div class="col-md-8 alert-danger" v-if="showValidError.length > 0" style="padding-top: 10px">
+        <ul v-for="(error,i) in showValidError" :key="i">
+          <li>{{error}}</li>
+        </ul>
+      </div>
       </div>
       <div class="row">
         <div class="col-md-5">
@@ -42,15 +46,17 @@
           </select>
         </div>
       </div>
-      <div class="row">
+      <div v-show="showSupplement" class="row">
         <div class="col-md-12">
-          <SupplementList />
+          <SupplementList  v-on:supplementToParent="getSupplementData"/>
         </div>
       </div>
       <div class="row" style="margin-bottom: 50px">
-        <button class="btn btn-primary btn-block" type="submit" @click="save">
+      <div class="col-md-2">
+          <button class="btn btn-primary btn-block" type="submit" @click="save">
             SAVE
         </button>
+      </div>
       </div>
   </div>
 </div>
@@ -59,6 +65,7 @@
 <script>
 import TypeList from "./TypeList.vue"
 import SupplementList from './SupplementList.vue'
+import ProductService from '../services/product.service'
 
 export default {
   name: "ProductForm",
@@ -70,54 +77,78 @@ export default {
     return {
       showValidError: [],
       message: "",
-      selectedTypeValue: "Produit",
-      types: ["Produit", "Menu"],
+      selectedTypeValue: "Product",
+      types: ["Product", "Menu"],
       tailles: [],
       taillesData: [],
       image: '',
       validImage: true,
       name: "",
-      description: ""
+      description: "",
+      supplementsData: [],
+      imagesArray: null
     };
   },
   computed: {
-    loggedIn() {
-      return this.$store.state.auth.status.loggedIn;
-    },
     showImage() {
       return this.image !== '';
+    },
+    showSupplement() {
+      return this.selectedTypeValue === "Menu"
     }
   },
   created() {
-    if (this.loggedIn) {
-      this.$router.push("/profile");
-    }
+    // if (!this.loggedIn) {
+    //   this.$router.push("/login");
+    // }
+    console.log("id ",  this.$route.params.id)
   },
   methods: {
     save() {
       this.showValidError = []
-      alert(this.name+"==> "+this.description)
+      if (this.name.trim().length <= 0) this.showValidError.push("Add the name")
+      if (this.description.trim().length <= 0) this.showValidError.push("Add the description")
+      if (this.taillesData.length <= 0) this.showValidError.push("Add size and price")
+      if(this.selectedTypeValue == "Menu" && this.supplementsData.length <= 0) this.showValidError.push("Add supplement")
+
+      if(this.showValidError.length <= 0) {
+        let formData = new FormData()
+        formData.append('file', this.imagesArray)
+        formData.append('name', this.name)
+        formData.append('description', this.description)
+        formData.append('price', this.taillesData)
+        formData.append('type', this.selectedTypeValue)
+        formData.append('choices',this.supplementsData)
+        ProductService.addProduct(formData)
+        this.imagesArray = null
+        this.name = ""
+        this.description = ""
+        this.taillesData = []
+        this.selectedTypeValue = "Product"
+        this.supplementsData = []
+      }
     },
     getTaillesData(data) {
       this.taillesData = data
-      console.log("data  ", data)
+    },
+    getSupplementData(data) {
+      this.supplementsData = data
     },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
       const allowedExtension = ['jpeg', 'jpg', 'png', 'gif'];
-      console.log("files", files)
       if (!files.length )
         return;
       this.validImage = allowedExtension.includes(files[0].type.split('/')[1])
       if (!this.validImage)
         return;
-      console.log("=====", this.validImage)
       this.createImage(files[0]);
     },
     createImage(file) {
       var reader = new FileReader();
       reader.onload = (e) => {
         this.image = e.target.result;
+        this.imagesArray = file
       };
       reader.readAsDataURL(file);
     },

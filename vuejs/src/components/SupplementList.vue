@@ -117,7 +117,7 @@ export default {
   methods: {
       addNew(data) {
         this.supplements.push(data);
-        this.$emit('childToParent', this.supplements);
+        this.$emit('supplementToParent', this.supplements);
       },
       openModal(data,index) {
         data['btnTitle'] = "Update supplement"
@@ -128,6 +128,7 @@ export default {
       onClose(data) {
         this.modalVisible = false;
         this.supplements[this.modalIndex] = data
+        this.$emit('supplementToParent', this.supplements);
       }
   },
   computed: {
