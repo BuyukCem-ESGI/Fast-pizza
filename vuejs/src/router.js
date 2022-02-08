@@ -9,6 +9,7 @@ import Profile from "./components/Profile.vue";
 import AdminBoard from "./components/AdminBoard.vue"
 import PizzeriaBoard from "./components/PizzeriaBoard.vue"
 import UserBoard from "./components/UserBoard.vue";
+import ProductHandler from "./components/ProductHandler.vue"
 const cart = () => import("./components/cart.vue")
 
 const routes = [
@@ -68,6 +69,11 @@ const routes = [
     path: "/supplement-handler",
     name: "supplement-handler",
     component: SupplementHandler,
+  },
+  {
+    path: "/product-handler",
+    name: "prodcut-handler",
+    component: ProductHandler,
   }
 ];
 
@@ -80,7 +86,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const publicPages = ['/','/login', '/register', '/home'];
     const authRequired = !publicPages.includes(to.path);
-    const loggedIn =  localStorage.getItem('user');
+    const loggedIn = true // localStorage.getItem('user');
 
     // trying to access a restricted page + not logged in
     // redirect to login page

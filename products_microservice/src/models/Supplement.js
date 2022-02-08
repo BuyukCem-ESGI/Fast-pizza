@@ -9,10 +9,6 @@ const SupplementSchema = new Schema({
       type: Number,
       required: true
   },
-  freeWithProduct: {
-    type: Boolean,
-    required: true
-  },
   imagesUrl: {
     type: String
 }
