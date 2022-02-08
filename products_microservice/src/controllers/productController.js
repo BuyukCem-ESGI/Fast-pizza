@@ -8,10 +8,13 @@ function respond(respCode, result, res) {
 
 
 exports.createProduct = async (req, res, next) => {
+    console.log("hello")
     const body = req.body;
     const imagesUrl = await aws.addImageToBucket(req)
+    console.log(imagesUrl)
     const product = await Product.exists({ name: body.name });
     if( product) {
+        console.log("validation error");
         respond(
             400,
             {status: 'error',message: 'product name already exist'},
@@ -23,12 +26,15 @@ exports.createProduct = async (req, res, next) => {
         newProduct
             .save()
             .then((product) => {
+                console.log(newProduct);
                 res.status(201).json(product);
             })
             .catch((err) => {
                 if (err.name === "ValidationError") {
+                    console.log("validation error 400");
                     res.status(400).json(err);
                 } else {
+                    console.log("validation error 500");
                     console.error(err);
                     res.sendStatus(500);
                 }
