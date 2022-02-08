@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\ImageProductController;
-use App\Controller\ProductController;
+use App\Controller\DeleteProductController;
+use App\Controller\PostProductController;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,7 +25,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
         'post_product'=>[
             'method'=>'POST',
             'path'=>'/products',
-            'controller'=>ProductController::class,
+            'controller'=>PostProductController::class,
             'security'=>"is_granted('ROLE_EDITEUR')",
             'read'=>false,
             'write'=>false,
@@ -67,50 +67,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
                         ]
                     ]
                 ]
-        ],
-        'post_product_image' =>[
-            'method'=>'POST',
-            'path'=>'/products/{id}/images',
-            'controller'=>ImageProductController::class,
-            'security'=>"is_granted('ROLE_EDITEUR')",
-            'validation_groups'=>['write_product_patch'],
-            'read'=>false,
-            'write'=>false,
-            "openapi_context"=>[
-                "summary"=>"Création d'une image pour un produit",
-                "description"=>"Création d'une image pour un produit",
-                "consumes"=>["multipart/form-data"],
-                "produces"=>["application/json"],
-                "responses"=>[
-                    "201"=>[
-                        "description"=>"Voici l'image du product",
-                    ]
-                ],
-                "requestBody"=>[
-                    'content'=>[
-                        'multipart/form-data' => [
-                            'schema'=>[
-                                'type'=>'object',
-                                'properties'=>[
-                                    'file'=>[
-                                        'type'=>'string',
-                                        'format'=> 'binary'
-                                    ],
-                                    'Image product'=>[
-                                        'type'=>'string',
-                                        'example'=>'Image produit',
-                                        'description'=>'Image produit',
-                                        'format'=>'string',
-                                        'maxLength'=>255,
-                                        'minLength'=>3,
-                                        'pattern'=>'^[a-zA-Z0-9]*$'
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
         ]
     ],
     itemOperations: [

@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class ProductController extends AbstractController
+class DeleteProductController extends AbstractController
 {
     private $client;
 
@@ -38,7 +38,7 @@ class ProductController extends AbstractController
                 ]
             ]
         );
-        dd($response->getStatusCode());
+
         if($response->getStatusCode() === 201) {
             $product = new Product();
 
@@ -46,16 +46,19 @@ class ProductController extends AbstractController
             $res = json_decode($res, true);
 
             $product->setName($res['name']);
-            $product->setDescription($res['description']);
-            $product->setImageUrl($res['imageUrl']);
             $product->setPrice($res['price']);
-            dd($product);
+            $product->setDescription($res['description']);
+
+            $product->setImageUrl($res['imagesUrl']);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($product);
             $entityManager->flush();
 
             return $this->json(['message' => 'Product created successfully'], 201);
         }else {
+            $res=$response->getContent();
+            $res = json_decode($res, true);
+
             return $this->json(['message' => 'Product not created'], 400);
         }
     }
