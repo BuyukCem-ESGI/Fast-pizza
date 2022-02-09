@@ -3,11 +3,14 @@
   <div class="col-md-2"></div>
   <div class="col-md-10">
       <div class="row">
-      <div class="col-md-8 alert-danger" v-if="showValidError.length > 0" style="padding-top: 10px">
-        <ul v-for="(error,i) in showValidError" :key="i">
-          <li>{{error}}</li>
-        </ul>
+         <button class="btn btn-success" @click="back"><font-awesome-icon icon="arrow-left" /></button>
       </div>
+      <div class="row">
+        <div class="col-md-8 alert-danger" v-if="showValidError.length > 0" style="padding-top: 10px">
+          <ul v-for="(error,i) in showValidError" :key="i">
+            <li>{{error}}</li>
+          </ul>
+        </div>
       </div>
       <div class="row">
         <div class="col-md-5">
@@ -38,6 +41,7 @@
           <TypeList v-on:childToParent="getTaillesData" />
         </div>
       </div>
+      <!-- supplement list
       <div class="row">
         <div class="col-md-4">
           <h4>Type of product</h4><br>
@@ -46,11 +50,13 @@
           </select>
         </div>
       </div>
+      
       <div v-show="showSupplement" class="row">
         <div class="col-md-12">
           <SupplementList  v-on:supplementToParent="getSupplementData"/>
         </div>
       </div>
+      -->
       <div class="row" style="margin-bottom: 50px">
       <div class="col-md-2">
           <button class="btn btn-primary btn-block" type="submit" @click="save">
@@ -64,21 +70,18 @@
 
 <script>
 import TypeList from "./TypeList.vue"
-import SupplementList from './SupplementList.vue'
 import ProductService from '../services/product.service'
 
 export default {
   name: "ProductForm",
   components: {
     TypeList,
-    SupplementList
   },
   data() {
     return {
       showValidError: [],
       message: "",
       selectedTypeValue: "Product",
-      types: ["Product", "Menu"],
       tailles: [],
       taillesData: [],
       image: '',
@@ -97,11 +100,16 @@ export default {
       return this.selectedTypeValue === "Menu"
     }
   },
-  created() {
-    // if (!this.loggedIn) {
-    //   this.$router.push("/login");
-    // }
-    console.log("id ",  this.$route.params.id)
+  mounted() {
+    if (!this.loggedIn) {
+      this.$router.push("/login");
+    } else {
+      if (this.$route.params.id) {
+        ProductService.getProductById().then((response)=> {
+          console.log(response)
+        })
+      }
+    }
   },
   methods: {
     save() {
@@ -120,7 +128,13 @@ export default {
           supplements: this.supplementsData,
           image: this.image.toString()
         }
-        ProductService.addProduct(jsonData)
+        if(this.$route.params.id) {
+          ProductService.updateProduct(jsonData,this.$route.params.id).then((response) => {
+            console.log(response)
+          })
+        }else {
+           ProductService.addProduct(jsonData)
+        }
         this.imagesArray = null
         this.name = ""
         this.description = ""
@@ -155,6 +169,9 @@ export default {
     },
     removeImage: function () {
       this.image = '';
+    },
+    back() {
+      this.$router.push("/product-handler");
     }
   },
   provide() {
@@ -174,7 +191,7 @@ export default {
     font-size: 20px
   }
   .row {
-    padding-top: 5vh
+    padding-top: 2vh
   }
   .card-header {
     background-color: #1AC073

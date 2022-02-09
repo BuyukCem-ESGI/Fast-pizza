@@ -7,9 +7,10 @@ import {
   faSignInAlt,
   faSignOutAlt,
   faTrash,
-  faTimes
+  faTimes,
+  faArrowLeft
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt,faTrash,faTimes);
+library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt,faTrash,faTimes,faArrowLeft);
 
 export { FontAwesomeIcon };

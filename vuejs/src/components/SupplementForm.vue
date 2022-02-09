@@ -3,6 +3,7 @@
     <div class="col-md-6">
         <label for="name">Name</label><br>
         <input
+        class="input-width"
         id="name"
         v-model="name"
         type="text"
@@ -12,6 +13,7 @@
     <div class="col-md-6">
         <label for="price">Limit</label><br>
         <input
+        class="input-width"
         id="price"
         v-model="price"
         type="number"
@@ -20,12 +22,7 @@
         >
     </div>
 </div>
-<div class="row">
-    <div class="col-md-4">
-       Free with product <input type="checkbox" id="checkbox" v-model="freeWithProduct" />
-    </div>
-</div>
-<div class="row">
+<div class="row" style="margin-top: 20px">
     <div class="col-md-6">
         <label v-show="!showImage" class="text-reader">
         Select picture
@@ -58,7 +55,6 @@ export default {
     return {
       name: "",
       price: null,
-      freeWithProduct: false,
       image: '',
       imagesArray: null,
       validImage: true,
@@ -69,7 +65,6 @@ export default {
     this.btnTitle = this.data.btnTitle
     this.name = this.data.name
     this.price = this.data.price
-    this.freeWithProduct = this.data.freeWithProduct
     this.image = this.data.image
   },
   computed: {
@@ -91,13 +86,11 @@ export default {
           this.$emit('supplementHandler', {
             name: this.name,
             price: this.price,
-            freeWithProduct: this.freeWithProduct,
             image: this.image,
             imagesArray: this.imagesArray,
           })
           this.name = "";
           this.price = null;
-          this.freeWithProduct = false;
           this.image = '';
           this.imagesArray = null;
         }
@@ -153,5 +146,9 @@ img {
   display: block;
   height: 200px;
   margin-bottom: 5px;
+}
+
+.input-width {
+  width: 90%
 }
 </style>

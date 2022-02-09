@@ -44,7 +44,6 @@ export default {
       formData: {
         name: "",
         price: null,
-        freeWithProduct: false,
         image: '',
         imagesArray: null,
         btnTitle: ''

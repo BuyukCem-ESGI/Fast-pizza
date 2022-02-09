@@ -15,7 +15,7 @@
             </router-link>
           </li>
           <li class="nav-item active">
-            <router-link to="/product-form" class="nav-link">
+            <router-link to="/product-handler" class="nav-link">
                 products
             </router-link>
           </li>
