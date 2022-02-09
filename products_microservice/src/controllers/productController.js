@@ -8,18 +8,17 @@ function respond(respCode, result, res) {
 
 
 exports.createProduct = async (req, res, next) => {
-    console.log("hello")
-    const body = req.body;
-    const imagesUrl = await aws.addImageToBucket(req)
-    console.log(imagesUrl)
+    body = req.body
+    console.log(body)
+    let imagesUrl = ""
+    if(body.image){
+        imagesUrl = await aws.addImageToBucket(body.image)
+    }
     const product = await Product.exists({ name: body.name });
-    if( product) {
-        console.log("validation error");
-        respond(
-            400,
-            {status: 'error',message: 'product name already exist'},
-            res
-        );
+    if(product) {
+        res.status(400).json({
+            message: "Product already exists"
+        });
     }else {
         body.imagesUrl = imagesUrl
         const newProduct = new Product(body);
@@ -32,7 +31,7 @@ exports.createProduct = async (req, res, next) => {
             .catch((err) => {
                 if (err.name === "ValidationError") {
                     console.log("validation error 400");
-                    res.status(400).json(err);
+                    res.status(400).json(err.message);
                 } else {
                     console.log("validation error 500");
                     console.error(err);
@@ -95,7 +94,9 @@ exports.updateProduct = async (req, res, next) => {
 }
 
 exports.deleteProduct = async (req, res, next) => {
+    console.log(req.params.id);
     const product = await Product.exists({ _id: req.params.id });
+    console.log(product)
     if( product) {
         Product.findOneAndRemove(req.params, (err,success) => {
             if(err) {

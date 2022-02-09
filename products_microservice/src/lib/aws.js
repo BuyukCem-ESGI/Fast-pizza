@@ -1,7 +1,14 @@
 const AWS = require('aws-sdk');
 
-exports.addImageToBucket = async (req) => {
-    const file = req.body.image;
+exports.addImageToBucket = async (file) => {
+    if(!file){
+        return {
+            statusCode: 400,
+            body: JSON.stringify({
+                message: 'No file provided'
+            })
+        }
+    }
     const base64Data = new Buffer.from(file.replace(/^data:image\/\w+;base64,/, ""), 'base64');
     const type = file.split(';')[0].split('/')[1];
 
@@ -31,8 +38,8 @@ exports.addImageToBucket = async (req) => {
 }
 function randomString() {
     length = 80 ;
-    chars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    var result = '';
-    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let result = '';
+    for (let i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
     return result;
 }

@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,32 +26,26 @@ class PostProductController extends AbstractController
     public function __invoke(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $dataRequest = $request->getContent();
-        $dataRequest = json_decode($dataRequest, true);
-        $dataRequest = $dataRequest['data'];
+        $data = json_decode($dataRequest, true);
         $response = $this->client->request(
             'POST',
             'http://product:3000/products',
             [
-                'body' => [
-                    'name' => $dataRequest['name'],
-                    'description' => $dataRequest['description'],
-                    'image' => $dataRequest['image'],
-                    'price' => $dataRequest['price'],
-                ]
+               "body" => $data
             ]
         );
-
         if($response->getStatusCode() === 201) {
             $product = new Product();
 
             $res=$response->getContent();
             $res = json_decode($res, true);
-
+            $product->setProductMicroserviceId($res['_id']);
             $product->setName($res['name']);
             $product->setPrice($res['price']);
             $product->setDescription($res['description']);
-
-            $product->setImageUrl($res['imagesUrl']);
+            if(!empty($res['imagesUrl'])) {
+                $product->setImageUrl($res['imagesUrl']);
+            }
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($product);
             $entityManager->flush();
@@ -62,4 +58,5 @@ class PostProductController extends AbstractController
             return $this->json(['message' => 'Product not created'], 400);
         }
     }
+
 }

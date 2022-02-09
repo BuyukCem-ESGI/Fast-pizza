@@ -33,6 +33,7 @@ const ProductSchema = new Schema({
         default: "Product"
     },
     imagesUrl: {
+        required: false,
         type: String
     }
 });
