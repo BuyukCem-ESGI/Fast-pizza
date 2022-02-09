@@ -9,7 +9,6 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Faker\Provider\Image;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -67,10 +66,27 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
                         ]
                     ]
                 ]
-        ]
+        ],
     ],
     itemOperations: [
-        'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
+        'delete' =>[
+            'method'=>'DELETE',
+            'path'=>'/products?productId={id}',
+            'controller'=>DeleteProductController::class,
+            'security'=>"is_granted('ROLE_EDITEUR')",
+            'read'=>false,
+            'write'=>false,
+            'openapi_context'=>[
+                "summary"=>"Suppression d'un produit",
+                "description"=>"Suppression d'un produit",
+                "produces"=>["application/json"],
+                "responses"=>[
+                    "204"=>[
+                        "description"=>"Voici la suppression de mon produit",
+                    ]
+                ]
+            ]
+        ],
         'get',
         'patch' => ['validation_groups' => ['write_product_patch'],
                      "security" => "is_granted('ROLE_EDITEUR')"]
@@ -93,6 +109,12 @@ class Product
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $productMicroserviceId;
+
 
     /**
      * @Assert\NotBlank(message="Le nom du produit ne peut pas être vide",
@@ -381,5 +403,21 @@ class Product
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductMicroserviceId(): ?string
+    {
+        return $this->productMicroserviceId;
+    }
+
+    /**
+     * @param mixed $productMicroserviceId
+     */
+    public function setProductMicroserviceId($productMicroserviceId): void
+    {
+        $this->productMicroserviceId = $productMicroserviceId;
     }
 }
