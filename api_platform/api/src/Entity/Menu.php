@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\PostMenuController;
 use App\Repository\MenuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,8 +22,67 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     denormalizationContext: ['groups' => ['write_menu_post','write_menu_patch']],
     collectionOperations: [
         'get',
-        'post' => ['validation_groups' => ['write_menu_post'],
-                   "security" => "is_granted('ROLE_EDITEUR')"]
+        'post' => [
+            'method' => 'POST',
+            'path' => '/menus',
+            'controller' => PostMenuController::class,
+            'security' => 'is_granted("ROLE_EDITEUR")',
+            'read' => false,
+            'write' => false,
+            'openapi_context' =>[
+                "summary"=>"Création d'un meunu",
+                "description"=>"Création d'un menu",
+                "consumes"=>["application/json"],
+                "produces"=>["application/json"],
+                "responses"=>[
+                    "201"=>[
+                        "description"=>"Menu créé",
+                    ]
+                ],
+                "requestBody"=>[
+                    'content'=>[
+                        'application/json'=>[
+                            'schema'=>[
+                                'type'=>'object',
+                                'properties'=>[
+                                    'name'=>[
+                                        'type'=>'string',
+                                        'example'=>'Menu 1',
+                                        'description'=>'Le nom du menu',
+                                        'maxLength'=>255,
+                                        'minLength'=>1,
+                                    ],
+                                    'description'=>[
+                                        'type'=>'string',
+                                        'example'=>'Menu 1',
+                                        'description'=>'La description du menu',
+                                        'maxLength'=>255,
+                                        'minLength'=>1,
+                                    ],
+                                    'price'=>[
+                                        'type'=>'number',
+                                        'example'=>'10',
+                                        'description'=>'Le prix du menu',
+                                        'maxLength'=>255,
+                                        'minLength'=>1,
+                                    ],
+                                    'products'=>[
+                                        'type'=>'array',
+                                        'description'=>'Les produits du menu',
+                                        'maxLength'=>255,
+                                        'minLength'=>1,
+                                        'items'=>[
+                                            'type'=>'integer',
+                                            'format'=>'int64',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ]
+            ]
+        ]
     ],
     itemOperations: [
         'delete' => ['security' => "is_granted('ROLE_EDITEUR')"],
