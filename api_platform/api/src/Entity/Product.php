@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\DeleteProductController;
+use App\Controller\PatchProductController;
 use App\Controller\PostProductController;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -69,27 +70,44 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
         ],
     ],
     itemOperations: [
-        'delete' =>[
-            'method'=>'DELETE',
-            'path'=>'/products?productId={id}',
-            'controller'=>DeleteProductController::class,
-            'security'=>"is_granted('ROLE_EDITEUR')",
-            'read'=>false,
-            'write'=>false,
-            'openapi_context'=>[
-                "summary"=>"Suppression d'un produit",
-                "description"=>"Suppression d'un produit",
-                "produces"=>["application/json"],
-                "responses"=>[
-                    "204"=>[
-                        "description"=>"Voici la suppression de mon produit",
+        'get',
+        'patch' => [
+            'method' => 'PATCH',
+            'path' => '/products/{id}',
+            'controller' => PatchProductController::class,
+            'security' => 'is_granted("ROLE_EDITEUR")',
+            'read' => false,
+            'write' => false,
+            "openapi_context" => [
+                "summary" => "Modification d'un produit",
+                "description" => "Modification d'un produit",
+                "consumes" => ["application/merge-patch+json"],
+                "produces" => ["application/json"],
+                "responses" => [
+                    "200" => [
+                        "description" => "Voici la desc de mon produit",
                     ]
                 ]
             ]
         ],
-        'get',
-        'patch' => ['validation_groups' => ['write_product_patch'],
-                     "security" => "is_granted('ROLE_EDITEUR')"]
+        'delete' =>[
+            'method' => 'DELETE',
+            'path' => '/products/{id}',
+            'controller' => DeleteProductController::class,
+            'security' => 'is_granted("ROLE_EDITEUR")',
+            'read' => false,
+            'write' => false,
+            "openapi_context" => [
+                "summary" => "Suppression d'un produit",
+                "description" => "Suppression d'un produit",
+                "produces" => ["application/json"],
+                "responses" => [
+                    "204" => [
+                        "description" => "Voici la desc de mon produit",
+                    ]
+                ]
+            ]
+        ]
     ],
     denormalizationContext: ['groups' => ['write_product_post','write_product_patch']],
     /*subresourceOperations: [
