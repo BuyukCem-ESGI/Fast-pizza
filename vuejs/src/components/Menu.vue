@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import UserService from "../services/user.service";
 import ProductList from "./ProductList.vue";
 
 export default {
@@ -63,19 +62,6 @@ export default {
     }
   },
   mounted() {
-    UserService.getUserBoard().then(
-      (response) => {
-        this.content = response.data;
-      },
-      (error) => {
-        this.content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
   },
 };
 </script>

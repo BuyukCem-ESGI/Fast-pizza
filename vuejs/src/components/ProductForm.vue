@@ -101,7 +101,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.loggedIn) {
+    if (!this.$store.state.auth.status.loggedIn) {
       this.$router.push("/login");
     } else {
       if (this.$route.params.id) {
@@ -141,6 +141,8 @@ export default {
         this.taillesData = []
         this.selectedTypeValue = "Product"
         this.supplementsData = []
+        this.image = ''
+        this.tailles = []
       }
     },
     getTaillesData(data) {

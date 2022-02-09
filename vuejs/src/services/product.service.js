@@ -28,7 +28,7 @@ class ProductService {
             headers: { 
               'Content-Type': 'application/json'
             },
-            data : data
+            data
           };
           
         return  axios(config)
