@@ -7,5 +7,5 @@ authentication_token:
 
 product:
     path: /products/{id}
-    controller: App\Controller\MyclassTest::deleteProduct
+    controller: App\Controller\PostProductController::deleteProduct
     methods: ['DELETE']

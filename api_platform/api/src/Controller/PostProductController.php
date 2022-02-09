@@ -59,4 +59,44 @@ class PostProductController extends AbstractController
         }
     }
 
+    #[Route(
+        name: 'delete_post',
+        path: '/products/{id}',
+        methods: ['DELETE'],
+        defaults: [
+            '_api_item_operation_name' => 'delete',
+        ],
+        requirements: [
+            'id' => '\d+',
+        ],
+    )]
+    public function deleteProduct(Request $request,$id): \Symfony\Component\HttpFoundation\JsonResponse
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $product = $entityManager->getRepository(Product::class)->find($id);
+        if (!$product) {
+            return $this->json(['message' => 'Product not found'], 404);
+        }
+
+        $response = $this->client->request(
+            'DELETE',
+            'http://product:3000/products/'.$product->getProductMicroserviceId()
+        );
+
+        if($response->getStatusCode() === 201 || $response->getStatusCode() === 200) {
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($product);
+            $entityManager->flush();
+
+            return $this->json(['message' => 'Product delete successfully'], 201);
+        }else {
+            $res=$response->getContent();
+            $res = json_decode($res, true);
+
+            return $this->json(['message' => 'Product not created'], 400);
+        }
+    }
+
+
 }
