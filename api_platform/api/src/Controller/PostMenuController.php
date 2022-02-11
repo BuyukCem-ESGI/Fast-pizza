@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Menu;
 use App\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,8 +20,24 @@ class PostMenuController extends AbstractController
 
     public function __invoke(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
+        $entityManager = $this->getDoctrine()->getManager();
         $dataRequest = $request->getContent();
         $data = json_decode($dataRequest, true);
+
+
+        foreach ($data['products'] as $key => $value) {
+            $id = preg_replace('/products\//i', "", $value);
+            $product = $entityManager->getRepository(Product::class)->find($id);
+            if (!$product) {
+                return $this->json(['message' => 'Product not found'], 404);
+            }
+            $productMicroserviceId = $product->getProductMicroserviceId();
+            if(!$productMicroserviceId){
+                return $this->json(['message' => 'Product not found'], 404);
+            }
+            $data['products'][$key]=$productMicroserviceId;
+        }
+
         $response = $this->client->request(
             'POST',
             'http://product:3000/menu',
@@ -28,29 +45,36 @@ class PostMenuController extends AbstractController
                "body" => $data
             ]
         );
-        dd($response->getStatusCode());
-        if($response->getStatusCode() === 201) {
-            $product = new Product();
 
+
+        if($response->getStatusCode() === 201) {
+            $menu = new Menu();
             $res=$response->getContent();
             $res = json_decode($res, true);
-            $product->setProductMicroserviceId($res['_id']);
-            $product->setName($res['name']);
-            $product->setPrice($res['price']);
-            $product->setDescription($res['description']);
-            if(!empty($res['imagesUrl'])) {
-                $product->setImageUrl($res['imagesUrl']);
+
+            $menu->setName($res["menu"]["name"]);
+            $menu->setDescription($res["menu"]["description"]);
+            $menu->setPrice($res["menu"]["price"]);
+
+            foreach ($res["menu"]["products"] as $key => $value) {
+                $product = $entityManager->getRepository(Product::class)->getProductByMicroservieId($res["menu"]["products"][$key]);
+                if(!$product[0]->getId()){
+                    return $this->json(['message' => 'Product not found'], 404);
+                }else{
+                    $menu->addProduct($product[0]);
+                }
             }
+            dd($menu->getProducts());
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($product);
+            $entityManager->persist($menu);
             $entityManager->flush();
 
-            return $this->json(['message' => 'Product created successfully'], 201);
+            return $this->json(['message' => 'Menu created successfully'], 201);
         }else {
             $res=$response->getContent();
             $res = json_decode($res, true);
 
-            return $this->json(['message' => 'Product not created'], 400);
+            return $this->json(['message' => 'Menu not created'], 400);
         }
     }
     /*

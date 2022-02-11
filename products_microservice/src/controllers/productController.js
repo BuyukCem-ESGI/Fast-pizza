@@ -9,7 +9,6 @@ function respond(respCode, result, res) {
 
 exports.createProduct = async (req, res, next) => {
     body = req.body
-    console.log(body)
     let imagesUrl = ""
     if(body.image){
         imagesUrl = await aws.addImageToBucket(body.image)
@@ -75,21 +74,15 @@ exports.updateProduct = async (req, res, next) => {
         }
         Product.findOneAndUpdate({_id: req.params.id},req.body ,(err,pro) => {
             if(err) {
-                respond(
-                    400,
-                    {status: 'err',message: 'product not updated'},
-                    res
-                );
+               res.status(500).json(err)
             }else {
-                respond(204,pro,res)
+                res.status(200).json(pro)
             }
-        }) // executes
+        })
     }else {
-        respond(
-            404,
-            {status: 'error',message: 'product not found'},
-            res
-        );
+        res.status(400).json({
+            message: "Product not found"
+        });
     }
 }
 

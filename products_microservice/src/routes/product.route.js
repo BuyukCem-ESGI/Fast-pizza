@@ -13,7 +13,7 @@ module.exports = (app) => {
     app.route('/products/:id')
         .get(productController.getProductById)
         .delete(productController.deleteProduct)
-        .patch(upload,productController.updateProduct)
+        .patch(productController.updateProduct)
     app.route('/products')
         .get(productController.getAllProducts)
         .post(upload,productController.createProduct)

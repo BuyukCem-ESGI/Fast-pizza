@@ -22,51 +22,51 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ApiResource(
     collectionOperations: [
         'get',
-        'post_product'=>[
-            'method'=>'POST',
-            'path'=>'/products',
-            'controller'=>PostProductController::class,
-            'security'=>"is_granted('ROLE_EDITEUR')",
-            'read'=>false,
-            'write'=>false,
-            "openapi_context"=>[
-                "summary"=>"Création d'un produit",
-                "description"=>"Création d'un produit",
-                "consumes"=>["multipart/form-data"],
-                "produces"=>["application/json"],
-                "responses"=>[
-                    "201"=>[
-                        "description"=>"Voici la desc de mon produit",
-                        ]
+        'post_product' => [
+            'method' => 'POST',
+            'path' => '/products',
+            'controller' => PostProductController::class,
+            'security' => "is_granted('ROLE_EDITEUR')",
+            'read' => false,
+            'write' => false,
+            "openapi_context" => [
+                "summary" => "Création d'un produit",
+                "description" => "Création d'un produit",
+                "consumes" => ["multipart/form-data"],
+                "produces" => ["application/json"],
+                "responses" => [
+                    "201" => [
+                        "description" => "Voici la desc de mon produit",
                     ]
-                ],
-                "requestBody"=>[
-                    'content'=>[
-                        'multipart/form-data'=>[
-                            'schema'=>[
-                                'type'=>'object',
-                                'properties'=>[
-                                    'name'=>[
-                                        'type'=>'string',
-                                        'description'=>'Nom du produit',
-                                        'example'=>'Produit 1',
-                                        'format'=>'string',
-                                        'maxLength'=>255,
-                                        'minLength'=>1,
-                                    ],
-                                    'description'=>[
-                                        'type'=>'string',
-                                        'description'=>'Description du produit',
-                                        'example'=>'Ceci est un produit',
-                                        'format'=>'string',
-                                        'maxLength'=>255,
-                                        'minLength'=>1,
-                                    ]
+                ]
+            ],
+            "requestBody" => [
+                'content' => [
+                    'multipart/form-data' => [
+                        'schema' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'name' => [
+                                    'type' => 'string',
+                                    'description' => 'Nom du produit',
+                                    'example' => 'Produit 1',
+                                    'format' => 'string',
+                                    'maxLength' => 255,
+                                    'minLength' => 1,
+                                ],
+                                'description' => [
+                                    'type' => 'string',
+                                    'description' => 'Description du produit',
+                                    'example' => 'Ceci est un produit',
+                                    'format' => 'string',
+                                    'maxLength' => 255,
+                                    'minLength' => 1,
                                 ]
                             ]
                         ]
                     ]
                 ]
+            ]
         ],
     ],
     itemOperations: [
@@ -90,7 +90,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
                 ]
             ]
         ],
-        'delete' =>[
+        'delete' => [
             'method' => 'DELETE',
             'path' => '/products/{id}',
             'controller' => DeleteProductController::class,
@@ -109,7 +109,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             ]
         ]
     ],
-    denormalizationContext: ['groups' => ['write_product_post','write_product_patch']],
+    denormalizationContext: ['groups' => ['write_product_post', 'write_product_patch']],
     /*subresourceOperations: [
         'api_products_types_products_get_subresource' => [
             'method' => 'GET',
@@ -141,7 +141,7 @@ class Product
      *     groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
+    #[Groups(['write_product_post', 'write_product_patch', 'read_products_get', 'read_categorys_get'])]
     private $name;
 
     /**
@@ -157,7 +157,7 @@ class Product
      *     groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
+    #[Groups(['write_product_post', 'write_product_patch', 'read_products_get', 'read_categorys_get'])]
     private $description;
 
     /**
@@ -168,7 +168,7 @@ class Product
      * @Assert\PositiveOrZero(groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="array")
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
+    #[Groups(['write_product_post', 'write_product_patch', 'read_products_get', 'read_categorys_get'])]
     private $price;
 
     /**
@@ -181,17 +181,18 @@ class Product
      *     groups={"write_product_post","write_product_patch"})
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
+    #[Groups(['write_product_post', 'write_product_patch', 'read_products_get', 'read_categorys_get'])]
     private $reference;
 
     /**
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    #[Groups(['write_product_post','write_product_patch','read_products_get','read_categorys_get'])]
+    #[Groups(['write_product_post', 'write_product_patch', 'read_products_get', 'read_categorys_get'])]
     private $imageUrl;
+
     /**
-     * @ORM\OneToMany(targetEntity=Cart::class, mappedBy="product")
+     * @ORM\ManyToMany (targetEntity=Cart::class, mappedBy="product")
      */
     private $carts;
 
@@ -216,7 +217,7 @@ class Product
     private $productTypes;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Menu::class, mappedBy="products")
+     * @ORM\ManyToMany(targetEntity=Menu::class, inversedBy="menu")
      */
     private $menus;
 

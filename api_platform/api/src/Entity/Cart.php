@@ -29,7 +29,7 @@ class Cart
     private $owner;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="carts")
+     * @ORM\ManyToMany (targetEntity=Product::class, inversedBy="carts")
      * @ORM\JoinColumn(nullable=false)
      */
     private $product;
@@ -40,7 +40,7 @@ class Cart
     private $quantity;
 
     /**
-     * @ORM\OneToMany(targetEntity=Menu::class, mappedBy="cart")
+     * @ORM\ManyToMany (targetEntity=Menu::class, mappedBy="cart")
      */
     private $menus;
 

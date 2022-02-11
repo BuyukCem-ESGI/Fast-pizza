@@ -1,21 +1,12 @@
-const supplementController = require('../controllers/supplementController');
-
-var multer  = require('multer');
-
-var storage = multer.memoryStorage({
-    destination: function(req, file, callback) {
-        callback(null, '');
-    }
-});
-
-let upload = multer({ storage: storage }).single('file');
+const menuController = require('../controllers/menuController');
 
 module.exports = (app) => {
-    app.route('/supplements/:id')
-        .get(supplementController.getSupplementById)
-        .delete(supplementController.deleteSupplement)
-        .patch(upload,supplementController.updateSupplement)
-    app.route('/supplements')
-        .get(supplementController.getAllSupplements)
-        .post(upload,supplementController.createSupplement)
+    app.route('/menu/:id')
+        .get(menuController.getMenuById)
+        .delete(menuController.deleteMenu)
+        .patch(menuController.updateMenu)
+    app.route('/menu')
+        .post(menuController.createMenu)
+        .get(menuController.getAllMenu)
+
 }
