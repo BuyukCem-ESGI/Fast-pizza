@@ -33,7 +33,7 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
     itemOperations: [
         'delete'=> ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'get'=>  ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
-        'put' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
+        //'put' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'patch' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'create_user' => [
             'method' => 'POST',

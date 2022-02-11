@@ -21,6 +21,7 @@ class deleteMenuController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
 
         $menu = $entityManager->getRepository(Menu::class)->find($id);
+
         if (!$menu->getMenuMicroserviceId()) {
             return $this->json(['message' => 'Menu not found'], 404);
         }
