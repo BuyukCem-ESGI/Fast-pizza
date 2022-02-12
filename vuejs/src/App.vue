@@ -24,7 +24,7 @@
                 Product types
             </router-link>
           </li>
-          <li v-if="currentUser" class="nav-item active">
+          <li  class="nav-item active">
               <router-link to="/cart" class="nav-link">
                 Cart
               </router-link>

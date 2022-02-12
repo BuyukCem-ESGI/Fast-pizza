@@ -5,9 +5,11 @@ import store from "./store";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from './plugins/font-awesome'
+import VueCreditCardValidation from 'vue-credit-card-validation';
 
-createApp(App,{showCart: false})
+createApp(App)
   .use(router)
   .use(store)
+  .use(VueCreditCardValidation)
   .component("font-awesome-icon", FontAwesomeIcon)
   .mount("#app");

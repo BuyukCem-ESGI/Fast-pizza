@@ -3,7 +3,7 @@ import authHeader from './auth.header';
 
 const API_URL = 'https://localhost:443';
 
-class ProductService {
+class OrderService {
 
     addOrder(data) {
         console.log(data);
@@ -26,4 +26,4 @@ class ProductService {
 
 }
 
-export default new ProductService();
+export default new OrderService();
