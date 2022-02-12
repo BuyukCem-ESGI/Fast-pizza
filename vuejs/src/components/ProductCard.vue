@@ -1,23 +1,22 @@
 <template>
-  <div class="card product-card">
-    <img :src="productData.img_url" class="card-img-top" @click="detail">
+  <div class="card product-card" v-bind:class="getHeight">
+    <img :src="data.image" class="card-img-top" @click="detail">
     <div class="row detail-container">
-      <div class="col-md-9"><span>Title: {{productData.title}}</span></div>
-      <div class="col-md-3 right-side">100€</div>
+      <div class="col-md-9"><span>{{data.name}}</span></div>
+      <div class="col-md-3 right-side">{{data.price}}€</div>
     </div>
-    <div class="row detail-container">
-      <div class="col-md-12">
-        <span>Sélectionner la taille</span>
+    <div class="row" v-if="productExist">
+      <div class="col-md-12" style="padding-left: 20px">
+        <h5>Supplement</h5><br>
+          <select v-model="selectedTypeValue" @change="onChange()" style="height: 40px;width: 95%;font-size: 16px" v-bind:class="{ error: error }">
+            <option style="font-size: 17px" v-for="(item, key) in productData.products" :value="item" :key="key">{{item.name}}</option>
+          </select>
       </div>
     </div>
     <div class="row" style="padding: 0px 10px 15px 10px">
-      <div class="col-md-9">
-      <select v-model="selectedValue">
-         <option v-for="(item, key) in filters" :value="item" :key="key">{{item}}</option>
-     </select>
-      </div>
-      <div class="col-md-3 right-side">
-        <button class="btn bucket-btn" v-on:click="addToCart(34563)">+</button>
+      <div class="col-md-8"></div>
+      <div class="col-md-4 right-side" style="margin-top: 15px">
+        <button class="btn bucket-btn" v-on:click="addToCart()">+</button>
       </div>
     </div>
   </div>
@@ -36,31 +35,54 @@ export default {
   },
  data() {
       return {
-        selectedValue: "Medium Classic",
-        filters: ["Medium Classic", "XLarge classic"],
+        selectedTypeValue: null,
+        error: false,
+        data: {}
       }
   },
   methods: {
     detail() {
-        alert(this.selectedValue)
+        alert("details")
     },
-    addToCart(id) {
-      console.log(id)
-      this.$store.dispatch("cart/addToCart", {
-        id: id,
-        quantity: 1
-      }).then((data) => {
-        console.log('in set Cart then')
-        console.log(data)
-      })
+    addToCart() {
+      if( this.selectedTypeValue ) {
+        this.data.supllement = this.selectedTypeValue
+        this.$store.dispatch("cart/addToCart", {
+          data: this.data,
+          quantity: 1
+        }).then(() => {
+          console.log("before emit")
+          console.log("data ",this.$store.state.cart.products)
+          this.$emit("inputData",this.$store.state.cart.products);
+        })
+      }else {
+        this.error = true
+      }
+    },
+    onChange() {
+      if(this.selectedTypeValue === null) {
+        this.error = true
+      }else {
+        this.error = false
+      }
     }
   },
+  computed: {
+    getHeight() {
+      return this.productData.products && this.productData.products.length > 0 ? 'menu-height' : 'other-height'
+    },
+    productExist() {
+      return this.productData.products && this.productData.products.length
+    }
+  },
+  created() {
+    this.data = this.productData
+  }
 };
 </script>
 
-<style>
+<style scoped>
     .product-card {
-      height: 365px;
       margin-top: 30px
     }
     .card-img-top {
@@ -72,7 +94,7 @@ export default {
       text-align: end;
     }
     .detail-container {
-      padding: 15px 10px 0px 10px
+      padding: 15px 10px 0px 10px;
     }
     .bucket-btn {
     width: 22px;
@@ -88,5 +110,14 @@ export default {
     }
     .bucket-btn:hover {
         color: #fff
+    }
+    .menu-height {
+      height: 480px
+    }
+    .other-height {
+      height: 350px;
+    }
+    .error {
+      border-color: red
     }
 </style>

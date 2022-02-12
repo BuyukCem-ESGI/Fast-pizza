@@ -6,7 +6,7 @@ import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from './plugins/font-awesome'
 
-createApp(App)
+createApp(App,{showCart: false})
   .use(router)
   .use(store)
   .component("font-awesome-icon", FontAwesomeIcon)

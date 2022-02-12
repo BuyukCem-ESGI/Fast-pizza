@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-10">
+  <div class="col-md-8">
     <h2> Menu </h2>
       <ProductList />
   </div>
@@ -17,43 +17,45 @@ export default {
     return {
       content: "",
       products: [
-                {
-                    'author': 'David Deustch',
-                    'title': 'The beginning of Infinity',
-                    'description': 'A book on philosphy about the origins of man',
-                    'img_url': 'https://placeimg.com/640/480/any'
-                },
-                {
-                    'author': 'Paul Coelho',
-                    'title': 'The Alchemist',
-                    'description': 'The true search for one\'s treasure',
-                    'img_url': 'https://placeimg.com/640/480/any'
-                },
-                {
-                    'author': 'Susan Kaye Quinn',
-                    'title': 'Open Minds',
-                    'description': 'Sci-Fi Futuristic book about mind reading',
-                    'img_url': 'https://placeimg.com/640/480/any'
-                },
-                {
-                    'author': 'Robert Kiyosaki',
-                    'title': 'Rich Dad, Poor Dad',
-                    'description': 'Motivational book on wealth building',
-                    'img_url': 'https://placeimg.com/640/480/any'
-                },
-                {
-                    'author': 'Dan Brown',
-                    'title': 'The Da Vinci Code',
-                    'description': 'Conspiracy theories about secrets of the holy grail',
-                    'img_url': 'https://placeimg.com/640/480/any'
-                },
-                {
-                    'author': 'Arthur Hailey',
-                    'title': 'The money changers',
-                    'description': 'Travel back in time and experience the banking system',
-                    'img_url': 'https://placeimg.com/640/480/any'
-                },
-            ]
+    {
+        _id: "1",
+        name: "type 1",
+        description: "description 1",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt",
+        products: [{_id: 1,name: 'Coca cola'},{_id: 2,name: 'Fanta'},{_id: 3,name: 'Hawai'}]
+    },
+
+    {_id: "2",
+        name: "type 2",
+        description: "description 2",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt",
+        products: [{_id: 1,name: 'Coca cola'},{_id: 2,name: 'Fanta'},{_id: 3,name: 'Hawai'}]
+    },
+    {_id: "3",
+        name: "type 3",
+        description: "description 3",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt",
+        products: [{_id: 1,name: 'Coca cola'},{_id: 2,name: 'Fanta'},{_id: 3,name: 'Hawai'}]
+    },
+    {
+       _id: "4",
+        name: "type 4",
+        description: "description 4",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt",
+        products: [{_id: 1,name: 'Coca cola'},{_id: 2,name: 'Fanta'},{_id: 3,name: 'Hawai'}]
+    },
+    {_id: "5",
+        name: "type 5",
+        description: "description 5",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt",
+        products: [{_id: 1,name: 'Coca cola'},{_id: 2,name: 'Fanta'},{_id: 3,name: 'Hawai'}]
+    }
+]
     };
   },
   provide() {

@@ -12,7 +12,23 @@
                     </button>
                 </div>
                 <div class="modal-body container">
-                  <SupplementForm @supplementHandler="closeModal" :data="formData" />
+                    <div class="row">
+                        <div class="col-md-10">
+                            <label for="name">Name</label><br>
+                            <input
+                            class="input-width"
+                            id="name"
+                            v-model="name"
+                            type="text"
+                            name="name"
+                            >
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 20px">
+                        <div class="col-md-6">
+                            <button class="btn btn-success" @click="closeModal">Update</button>
+                        </div>
+                    </div>
               </div>
             </div>
           </div>
@@ -25,11 +41,9 @@
 
 
 <script>
-import SupplementForm from './SupplementForm.vue';
 export default {
   name: "SupplementModal",
   components: {
-    SupplementForm
   },
   props: {
     data: {
@@ -41,27 +55,22 @@ export default {
     data () {
 
     return {
-      formData: {
         name: "",
-        price: null,
-        image: '',
-        imagesArray: null,
-        btnTitle: ''
-      },
     }
 
   },
   methods: {
-    closeModal(data) {
-      this.$emit('close',data)
+    closeModal() {
+        if (this.data === this.name ) {
+            this.$emit('close',"")
+        }else {
+            this.$emit('close',this.name)
+        }
+      
     }
   },
   created() {
-      this.formData.name = this.data.name
-      this.formData.price = this.data.price
-      this.formData.freeWithProduct = this.data.freeWithProduct
-      this.formData.image = this.data.image
-      this.formData.btnTitle = this.data.btnTitle
+      this.name = this.data
 
   }
 }  
@@ -81,8 +90,10 @@ export default {
   transition: opacity .3s ease;
 }
 .modal-content {
-  width: 1000px !important;
-  margin-left: -50%;
+  width: 500px !important;
+}
+.input-width {
+    width: 100%
 }
 
 </style>

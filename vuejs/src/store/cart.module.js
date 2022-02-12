@@ -1,15 +1,13 @@
 import cartService from '../services/cart.service.js'
 
-const user =localStorage.getItem('user');
-const initialState = user
-    ? {status: {loggedIn: true}, user}
-    : {status: {loggedIn: false}, user: null};
+const products =localStorage.getItem('products');
+const cartState = products
+    ? {products: JSON.parse(products)}
+    : {products: []};
 
-const cartState = []
 export const cart = {
-    cartState: cartState,
     namespaced: true,
-    state: initialState,
+    state: cartState,
     actions: {
         getCart({commit}, cartId) {
             cartService.getCart(cartId).then(data => {
@@ -21,67 +19,66 @@ export const cart = {
         },
 
         addToCart({commit}, product) {
-            console.log("Hello")
-            console.log(product.id);
-            console.log(product.quantity);
-/*
-            let data = _.find(this.cartState, ['_id', product.id])
-            if(!data){
-                this.cart.push({
-                    details: product,
-                    quantity: 1
-                })
-                cartService.sendElementInCart({
-                    details: product,
-                    quantity: 1
-                }).then(() => {
-                    return console.log('added to cart')
-                })
-
-            }else{
-                data.quantity += 1
-                cartService.updateElementInCart({
-                    details: product,
-                    quantity: 1
-                }).then(() => {
-                    return console.log('updated cart')
-                })
-            }*/
             commit('addToCart', product);
         },
-
-        removeFromCart(sku) {
-            const locationInCart = this.cart.findIndex(p => {
-                return p.details.sku === sku
-            })
-            if (this.cart[locationInCart].quantity <= 1) {
-                this.cart.splice(locationInCart, 1)
-            } else {
-                this.cart[locationInCart].quantity--
-            }
-            cartService.deleteElementInCart(locationInCart).then(() => {
-                console.log('deleted from cart')
-            })
+        removeFromCart({commit}, id) {
+            commit('removeFromCart',id)
         },
-
-        setQuantityElement(sku) {
-            const locationInCart = this.cart.findIndex(p => {
-                return p.details.sku === sku
-            })
-            if (locationInCart) {
-                this.cart[locationInCart].quantity++
-                cartService.updateElementInCart(this.cart[locationInCart]).then(() => {
-                    console.log('updated')
-                })
-            }
+        changeQuantity({commit}, data) {
+            commit('changeQuantity',data)
         },
     },
     mutations: {
         getCart(state) {
-           return state.cartState
+           return state.products
         },
         addToCart(state,product) {
-            state.cartState.product = product;
+            if (state.products.length == 0) {
+                const ar = state.products
+                ar.push(product)
+                state.products = ar
+            }else {
+                const found = state.products.find( p => p.data._id === product.data._id)
+                if(found) {
+                    state.products = state.products.map( p => {
+                        if (found.data._id === p.data._id) {
+                            p.quantity = p.quantity + 1
+                        }
+                        return p;
+                    })
+                }else {
+                    state.products.push(product)
+
+                }
+            }
+            localStorage.setItem('products',JSON.stringify(state.products))
         },
+        removeFromCart(state,id) {
+            state.products = state.products.filter( p => p.data._id !== id)
+            localStorage.setItem('products',JSON.stringify(state.products))
+        },
+        changeQuantity(state,data) {
+            switch(data.action) {
+                case 'plus':
+                    state.products = state.products.map( p => {
+                        if (data.id === p.data._id) {
+                            p.quantity = p.quantity + 1
+                        }
+                        return p;
+                    })
+                    break;
+                case 'minus':
+                    state.products = state.products.map( p => {
+                        if (data.id === p.data._id) {
+                            p.quantity = p.quantity - 1
+                        }
+                        return p;
+                    })
+                    break;
+                default :
+                console.log("R")
+            }
+            localStorage.setItem('products',JSON.stringify(state.products))
+        }
     }
 };

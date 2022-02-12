@@ -1,51 +1,61 @@
 <template>
-  <div class="container mt-5 mb-5">
-    <div class="d-flex justify-content-center row">
-      <div class="col-md-8">
-        <div class="p-2">
-          <h4>Shopping cart</h4>
+  <div class="row" style="margin-top: 5%">
+    <div class="col-md-4"></div>
+    <div class="col-md-4"  style="border: 1px solid #bcc1c5; padding: 2%">
+      <div class="row">
+          <h1>Confirmer la commande</h1>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <form>
+          <div class="form-group">
+          <div class="form-group">
+              <label for="exampleInputEmail1">Nom</label>
+              <input type="text" v-model="userData.lastName" class="form-control"  placeholder="Veuillez saisir votre nom">
+            </div>
+              <label for="exampleInputEmail1">Prénom</label>
+              <input type="text" v-model="userData.firstName" class="form-control"  placeholder="Veuillez saisir votre prénom">
+            </div>
+          <div class="form-group">
+              <label for="exampleInputEmail1">Mobile</label>
+              <input type="number" v-model="userData.phoneNumber" class="form-control"  placeholder="Pour vous contacter si besoin">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="email" v-model="userData.email" class="form-control"  placeholder="Pour vous envoyer une confirmation">
+            </div>
+          </form>
         </div>
-
-        <div class="d-flex flex-row justify-content-between align-items-center p-2 bg-white mt-4 px-3 rounded">
-          <div class="mr-1">
-            <img class="rounded" src="https://i.imgur.com/XiFJkhI.jpg" width="70"></div>
-
-          <div class="d-flex flex-column align-items-center product-details">
-              <span class="font-weight-bold">Basic T-shirt</span>
-              <div class="d-flex flex-row product-desc">
-                <div class="size mr-1">
-                  <span class="text-grey">Size:</span>
-                  <span class="font-weight-bold">&nbsp;M</span>
-                </div>
-                <div class="color">
-                  <span class="text-grey">Color:</span>
-                  <span class="font-weight-bold">&nbsp;Grey</span>
-                </div>
-              </div>
-          </div>
-
-          <div class="d-flex flex-row align-items-center qty"><i class="fa fa-minus text-danger"></i>
-            <h5 class="text-grey mt-1 mr-1 ml-1">2</h5>
-            <i class="fa fa-plus text-success"></i>
-          </div>
-          <div>
-            <h5 class="text-grey">$20.00</h5>
-          </div>
-          <div class="d-flex align-items-center">
-            <i class="fa fa-trash mb-1 text-danger"></i>
-          </div>
+      </div>
+      <div class="row"></div>
+      <div class="row">
+        <div class="col-md-12">
+          <vue-google-autocomplete
+              id="map"
+              classname="form-control"
+              placeholder="Start typing"
+              v-on:placechanged="getAddressData"
+              country="fr"
+          >
+          </vue-google-autocomplete>
         </div>
-        <div class="d-flex flex-row align-items-center mt-3 p-2 bg-white rounded">
-          <input type="text" class="form-control border-0 gift-card" placeholder="discount code/gift card">
-          <button class="btn btn-outline-warning btn-sm ml-2" type="button">Apply</button>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <button v-if="total && total>0" type="submit" @click="paid" class="btn btn-primary" style="width: 100%">Total à payer {{total}}</button>
         </div>
       </div>
     </div>
+    <div class="col-md-4"></div>
   </div>
 </template>
 <script>
+import VueGoogleAutocomplete from 'vue-google-autocomplete'
 export default {
   name: "cart",
+  components: {
+    VueGoogleAutocomplete
+  },
   props: {
      productData: {
 
@@ -54,6 +64,15 @@ export default {
   data() {
     return {
       cart: [],
+      address: '',
+      userData: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: null
+      },
+      total: null
+
     }
   },
   mounted() {
@@ -62,15 +81,35 @@ export default {
         this.cart.push(item)
       })*/
   },
+  created() {
+    let count = 0
+    const products =  this.$store.state.cart.products;
+    for (const product of products) {
+      count+=product.data.price * product.quantity
+    }
+    this.total = count
+    console.log("count", count)
+  },
 
   methods: {
     detail() {
     },
-    setCart() {
-
-     }
+    getAddressData(addressData) {
+      this.address = addressData;
+    },
+    paid() {
+      console.log("adress", this.address)
+      console.log("user data", this.userData)
+    }
 
   },
 };
 
 </script>
+
+<style scoped>
+  input {
+    width: 100%
+  }
+
+</style>

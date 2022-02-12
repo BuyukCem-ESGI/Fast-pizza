@@ -39,7 +39,9 @@
         <keep-alive>
           <component :is="currentTabComponent">     </component>
         </keep-alive>
-      <div class="col-xs-2 col-md-1"></div>
+      <div class="col-xs-2 col-md-3">
+        <DynamicCart />
+      </div>
     </div>
 </template>
 
@@ -47,6 +49,7 @@
 import Menu from "./Menu.vue";
 import Pizzas from "./Pizzas.vue";
 import Extra from "./Extra.vue";
+import DynamicCart from "./DynamicCart.vue";
 
 export default {
   name: "Home",
@@ -60,12 +63,18 @@ export default {
   computed: {
     currentTabComponent() {
       return this.currentTab;
-    }
+    },
+  },
+  methods: {
   },
   components: {
     Menu,
     Pizzas,
-    Extra
+    Extra,
+    DynamicCart
+  },
+  created() {
+ 
   }
 };
 </script>

@@ -3,11 +3,11 @@ import authHeader from './auth.header';
 
 const API_URL = 'https://localhost:443';
 
-class ProductService {
+class ProductTypeService {
 
-    addProduct(data) {
+    addProductType(data) {
         console.log(data);
-        axios.post(API_URL + "/products", {
+        axios.post(API_URL + "/product-type", {
             data
         },{
             headers: {'Authorization': "Bearer "+authHeader()}
@@ -19,12 +19,11 @@ class ProductService {
             console.log(response);
         });
     }
-
     updateProduct(data,id) {
         console.log(data);
         var config = {
             method: 'patch',
-            url: API_URL+'/products/'+id,
+            url: API_URL+'/product-type/'+id,
             headers: {'Authorization': "Bearer "+authHeader()},
             data
           };
@@ -35,20 +34,20 @@ class ProductService {
     getProductById(id) {
       var config = {
         method: 'get',
-        url: API_URL + '/products/'+id,
+        url: API_URL + '/product-type/'+id,
         headers: {'Authorization': "Bearer "+authHeader()},
       };
         return axios(config)
     }
 
     getAllProducts() {
-      return axios.get(API_URL + '/products',{headers: {'Authorization': "Bearer "+authHeader()}});
+      return axios.get(API_URL + '/product-type',{headers: {'Authorization': "Bearer "+authHeader()}});
     }
 
     deleteProduct(id) {
         var config = {
             method: 'delete',
-            url:  API_URL+'/products/'+id,
+            url:  API_URL+'/product-type/'+id,
             headers: { 
               'Content-Type': 'application/json'
             }
@@ -58,4 +57,4 @@ class ProductService {
     }
 }
 
-export default new ProductService();
+export default new ProductTypeService();

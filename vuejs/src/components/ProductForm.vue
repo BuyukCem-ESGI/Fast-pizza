@@ -25,6 +25,19 @@
         </div>
       </div>
       <div class="row">
+         <div class="col-md-5">
+          <label for="price">Price</label><br>
+          <input
+          class="input-width"
+          id="price"
+          v-model="price"
+          type="number"
+          name="price"
+          min="0"
+          >
+        </div>
+      </div>
+      <div class="row">
         <div class="col-md-6">
           <label v-show="!showImage" class="text-reader">
             Select cover picture
@@ -36,12 +49,13 @@
           </div>
         </div>
       </div>
+      <!--
       <div class="row">
         <div class="col-md-8">
           <TypeList v-on:childToParent="getTaillesData" />
         </div>
-      </div>
-      <!-- supplement list
+      </div> -->
+ 
       <div class="row">
         <div class="col-md-4">
           <h4>Type of product</h4><br>
@@ -50,7 +64,21 @@
           </select>
         </div>
       </div>
-      
+
+      <div class="row"  v-show="showProduct">
+        <div class="col-md-8">
+        <p>Select products</p>
+            <Multiselect
+                v-model="value"
+                mode="tags"
+                :close-on-select="false"
+                :searchable="true"
+                :create-option="true"
+                :options="selectedProducts"
+            />
+        </div>
+      </div>
+     <!-- 
       <div v-show="showSupplement" class="row">
         <div class="col-md-12">
           <SupplementList  v-on:supplementToParent="getSupplementData"/>
@@ -69,26 +97,65 @@
 </template>
 
 <script>
-import TypeList from "./TypeList.vue"
-import ProductService from '../services/product.service'
 
+const data = [
+    {
+        _id: "1",
+        name: "type 1",
+        description: "description 1",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
+    },
+
+    {_id: "2",
+        name: "type 2",
+        description: "description 2",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
+    },
+    {_id: "3",
+        name: "type 3",
+        description: "description 3",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
+    },
+    {
+       _id: "4",
+        name: "type 4",
+        description: "description 4",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
+    },
+    {_id: "5",
+        name: "type 5",
+        description: "description 5",
+        price: 12,
+        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
+    }
+]
+import ProductService from '../services/product.service'
+import Multiselect from '@vueform/multiselect';
 export default {
   name: "ProductForm",
   components: {
-    TypeList,
+    Multiselect
   },
   data() {
     return {
       showValidError: [],
       message: "",
-      selectedTypeValue: "Product",
-      tailles: [],
-      taillesData: [],
+      selectedTypeValue: "Pizza",
+      price: null,
+      value: [],
+      selectedProducts: [],
+      //tailles: [],
+      //taillesData: [],
+      types: ["Pizza","Menu","Supplement"],
       image: '',
       validImage: true,
       name: "",
       description: "",
-      supplementsData: [],
+      productsData: [],
       imagesArray: null
     };
   },
@@ -96,15 +163,28 @@ export default {
     showImage() {
       return this.image !== '';
     },
-    showSupplement() {
+    showProduct() {
       return this.selectedTypeValue === "Menu"
     }
   },
   mounted() {
+
+    this.selectedProducts = data.map((item) => {
+        item.value = item._id
+        item.label = item.name 
+        return item
+     });
     if (!this.$store.state.auth.status.loggedIn) {
       this.$router.push("/login");
     } else {
       if (this.$route.params.id) {
+        let d = data[this.$route.params.id]
+        this.name = d.name
+        this.description = d.description
+        this.price = d.price
+        this.image = d.image
+        this.value = ["1","4"]
+        
         ProductService.getProductById().then((response)=> {
           console.log(response)
         })
@@ -116,16 +196,19 @@ export default {
       this.showValidError = []
       if (this.name.trim().length <= 0) this.showValidError.push("Add the name")
       if (this.description.trim().length <= 0) this.showValidError.push("Add the description")
-      if (this.taillesData.length <= 0) this.showValidError.push("Add size and price")
-      if(this.selectedTypeValue === "Menu" && this.supplementsData.length <= 0) this.showValidError.push("Add supplement")
-
+      if(this.selectedTypeValue === "Menu" && this.value.length <= 0) this.showValidError.push("Add product")
+      if (isNaN(parseInt(this.price)))
+              this.showValidError.push("Enter price")
+      if (this.value.length === 0)
+            this.showValidError.push("Select products")
       if(this.showValidError.length <= 0) {
         const jsonData = {
           name: this.name,
           description: this.description,
           type: this.selectedTypeValue,
-          price: this.taillesData,
-          supplements: this.supplementsData,
+          //price: this.taillesData,
+          price: this.price,
+          products: this.value,
           image: this.image.toString()
         }
         if(this.$route.params.id) {
@@ -138,18 +221,18 @@ export default {
         this.imagesArray = null
         this.name = ""
         this.description = ""
-        this.taillesData = []
-        this.selectedTypeValue = "Product"
-        this.supplementsData = []
+        //this.taillesData = []
+        this.selectedTypeValue = "Pizza"
+        this.productsData = []
         this.image = ''
-        this.tailles = []
+        //this.tailles = []
       }
     },
-    getTaillesData(data) {
-      this.taillesData = data
-    },
+    // getTaillesData(data) {
+    //   this.taillesData = data
+    // },
     getSupplementData(data) {
-      this.supplementsData = data
+      this.productsData = data
     },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
@@ -178,14 +261,15 @@ export default {
   },
   provide() {
     return {
-      tailles: this.tailles,
+      //tailles: this.tailles,
       choices: []
     }
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+@import "@vueform/multiselect/themes/default.scss";
   .btn-primary {
     background-color: #1AC073 !important;
     border-color: #1AC073 !important;
@@ -227,4 +311,5 @@ img {
   height: 400px;
   margin-bottom: 5px;
 }
+
 </style>

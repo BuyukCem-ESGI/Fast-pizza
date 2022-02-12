@@ -20,6 +20,7 @@
     "vee-validate": "^4.5.7",
     "vue": "^3.0.0",
     "vue-file-selector": "^0.6.0",
+    "vue-google-autocomplete": "^1.1.2",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2",
     "yup": "^0.32.11"
@@ -31,7 +32,9 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint-plugin-vue": "^7.0.0",
+    "sass": "^1.49.7",
+    "sass-loader": "^10.1.1"
   },
   "eslintConfig": {
     "root": true,

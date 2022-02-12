@@ -4,7 +4,7 @@ import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 
 import ProductForm from './components/ProductForm.vue';
-import SupplementHandler from './components/SupplementHandler.vue'
+import ProductTypeHandler from './components/ProductTypeHandler.vue'
 import Profile from "./components/Profile.vue";
 import AdminBoard from "./components/AdminBoard.vue"
 import PizzeriaBoard from "./components/PizzeriaBoard.vue"
@@ -66,9 +66,9 @@ const routes = [
     component: ProductForm,
   },
   {
-    path: "/supplement-handler",
-    name: "supplement-handler",
-    component: SupplementHandler,
+    path: "/product-type-handler",
+    name: "product-type-handler",
+    component: ProductTypeHandler,
   },
   {
     path: "/product-handler",

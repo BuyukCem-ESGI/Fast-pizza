@@ -1,12 +1,11 @@
 <template>
-  <div class="col-md-10">
+  <div class="col-md-8">
     <h2> Extras  </h2>
       <ProductList />
   </div>
 </template>
 
 <script>
-import UserService from "../services/user.service";
 import ProductList from "./ProductList.vue";
 
 export default {
@@ -63,19 +62,7 @@ export default {
     }
   },
   mounted() {
-    UserService.getUserBoard().then(
-      (response) => {
-        this.content = response.data;
-      },
-      (error) => {
-        this.content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
+
   },
 };
 </script>

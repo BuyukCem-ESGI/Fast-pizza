@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-nav">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-nav">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -16,12 +16,12 @@
           </li>
           <li class="nav-item active">
             <router-link to="/product-handler" class="nav-link">
-                products
+                Products
             </router-link>
           </li>
           <li class="nav-item active">
-            <router-link to="/supplement-handler" class="nav-link">
-                supplements
+            <router-link to="/product-type-handler" class="nav-link">
+                Product types
             </router-link>
           </li>
           <li v-if="currentUser" class="nav-item active">
@@ -48,7 +48,19 @@
               </router-link>
             </li>
         </div>
-
+        <div v-if="currentUser" class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <router-link to="/profile" class="nav-link">
+                <font-awesome-icon icon="user" />
+                {{ currentUser.username }}
+              </router-link>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" @click.prevent="logOut">
+                <font-awesome-icon icon="sign-out-alt" /> LogOut
+              </a>
+            </li>
+        </div>
       </div>
     </nav>
 
@@ -84,6 +96,9 @@ export default {
       this.$store.dispatch('auth/logout');
       this.$router.push('/login');
     }
+  },
+  mounted() {
+
   }
 };
 </script>
