@@ -6,30 +6,30 @@
           <h1>Confirmer la commande</h1>
       </div>
       <div class="row">
+      <h3>Information personnelle</h3>
         <div class="col-md-12">
-          <form>
           <div class="form-group">
           <div class="form-group">
               <label for="exampleInputEmail1">Nom</label>
-              <input type="text" v-model="userData.lastName" class="form-control"  placeholder="Veuillez saisir votre nom">
+              <input type="text" v-model="userData.lastName" class="form-control"  placeholder="Veuillez saisir votre nom"  @change="validate">
             </div>
               <label for="exampleInputEmail1">Prénom</label>
-              <input type="text" v-model="userData.firstName" class="form-control"  placeholder="Veuillez saisir votre prénom">
+              <input type="text" v-model="userData.firstName" class="form-control"  placeholder="Veuillez saisir votre prénom"  @change="validate">
             </div>
           <div class="form-group">
               <label for="exampleInputEmail1">Mobile</label>
-              <input type="number" v-model="userData.phoneNumber" class="form-control"  placeholder="Pour vous contacter si besoin">
+              <input type="number" v-model="userData.phoneNumber" class="form-control"  placeholder="Pour vous contacter si besoin"  @change="validate">
             </div>
             <div class="form-group">
               <label for="exampleInputEmail1">Email address</label>
-              <input type="email" v-model="userData.email" class="form-control"  placeholder="Pour vous envoyer une confirmation">
+              <input type="email" v-model="userData.email" class="form-control"  placeholder="Pour vous envoyer une confirmation"  @change="validate">
             </div>
-          </form>
         </div>
       </div>
       <div class="row"></div>
       <div class="row">
         <div class="col-md-12">
+        <h4>Adresse</h4>
           <vue-google-autocomplete
               id="map"
               classname="form-control"
@@ -42,6 +42,32 @@
       </div>
       <div class="row">
         <div class="col-md-12">
+        <h4>Moyen de paiement</h4>
+          <div class="form-group">
+            <label>Card number</label>
+            <input :data-error="(cardErrors.cardNumber)?true:false" v-model="cardNumber" type="tel" class="form-control" placeholder="#### #### #### ####" v-cardformat:formatCardNumber @change="validate">
+            <div v-if="cardErrors.cardNumber" class="error">
+              <small>{{ cardErrors.cardNumber }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Card Expiry</label>
+            <input :data-error="(cardErrors.cardExpiry)?true:false" v-model="cardExpiry" maxlength="10" class="form-control" v-cardformat:formatCardExpiry @change="validate">
+            <div v-if="cardErrors.cardExpiry" class="error">
+              <small>{{ cardErrors.cardExpiry }}</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Card CVC</label>
+            <input :data-error="(cardErrors.cardCvc)?true:false" v-model="cardCvc" class="form-control" v-cardformat:formatCardCVC @change="validate">
+            <div v-if="cardErrors.cardCvc" class="error">
+              <small>{{ cardErrors.cardCvc }}</small>
+            </div>
+          </div>
+        </div>
+        </div>
+      <div class="row">
+        <div class="col-md-12">
           <button v-if="total && total>0" type="submit" @click="paid" class="btn btn-primary" style="width: 100%">Total à payer {{total}}</button>
         </div>
       </div>
@@ -51,6 +77,7 @@
 </template>
 <script>
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
+import OrderService from '../services/order.service'
 export default {
   name: "cart",
   components: {
@@ -71,7 +98,11 @@ export default {
         email: '',
         phoneNumber: null
       },
-      total: null
+      total: null,
+      cardNumber: null,
+      cardExpiry: null,
+      cardCvc: null,
+      cardErrors: {},
 
     }
   },
@@ -93,15 +124,52 @@ export default {
 
   methods: {
     detail() {
+      
     },
     getAddressData(addressData) {
       this.address = addressData;
     },
     paid() {
+      this.validate()
+      if(Object.keys(this.cardErrors).length === 0) {
+        const objectData = {
+          adress: this.address,
+          userData: this.userData,
+          order: this.$store.state.cart.products,
+          card: {
+            cardNumber: this.cardNumber,
+            cardExpiry: this.cardExpiry,
+            cardCvc: this.cardCvc,
+          }
+        }
+        OrderService.addOrder(objectData).then((response) => {
+          console.log("response",response)
+        })
+      }
       console.log("adress", this.address)
       console.log("user data", this.userData)
-    }
+    },
+    validate (){
+      console.log("control")
+          // init
+          this.cardErrors = {};
+          
+          // validate card number
+          if(!this.$cardFormat.validateCardNumber(this.cardNumber)){
+            this.cardErrors.cardNumber = "Invalid Credit Card Number.";
+          }
 
+          // validate card expiry
+          if (!this.$cardFormat.validateCardExpiry(this.cardExpiry)) {
+            this.cardErrors.cardExpiry = "Invalid Expiration Date.";
+          }
+
+          // validate card CVC
+          if (!this.$cardFormat.validateCardCVC(this.cardCvc)) {
+            this.cardErrors.cardCvc = "Invalid CVC.";
+          }
+
+        },
   },
 };
 
@@ -110,6 +178,23 @@ export default {
 <style scoped>
   input {
     width: 100%
+  }
+  input[data-error="true"]{
+        border-color: #dc3545;
+        padding-right: calc(1.5em + .75rem);
+        background-image: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc354…%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E);
+        background-repeat: no-repeat;
+        background-position: center right calc(.375em + .1875rem);
+        background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+      }
+  .card-number{
+    padding-right: 20px;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    font-size: .9rem;
+    cursor: pointer;
+  }
+  .error {
+    color: red
   }
 
 </style>
