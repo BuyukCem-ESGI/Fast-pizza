@@ -33,7 +33,7 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
     itemOperations: [
         'delete'=> ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'get'=>  ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
-        'put' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
+        //'put' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'patch' => ["security" => "is_granted('ROLE_USER') and object.getId() == user.getId()"],
         'create_user' => [
             'method' => 'POST',
@@ -195,12 +195,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
     private $phoneNumber;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Menu::class, mappedBy="owner")
-     */
-    #[ApiSubresource(maxDepth: 1)]
-    private $menus;
 
     public function __construct()
     {
@@ -443,35 +437,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->phoneNumber = $phoneNumber;
 
-        return $this;
-    }
-
-    /**
-     * @return Collection|Menu[]
-     */
-    public function getMenus(): Collection
-    {
-        return $this->menus;
-    }
-
-    public function addMenu(Menu $menu): self
-    {
-        if (!$this->menus->contains($menu)) {
-            $this->menus[] = $menu;
-            $menu->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMenu(Menu $menu): self
-    {
-        if ($this->menus->removeElement($menu)) {
-            // set the owning side to null (unless already changed)
-            if ($menu->getOwner() === $this) {
-                $menu->setOwner(null);
-            }
-        }
         return $this;
     }
 }

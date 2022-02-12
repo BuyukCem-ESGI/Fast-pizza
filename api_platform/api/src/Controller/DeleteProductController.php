@@ -1,14 +1,17 @@
 <?php
 
 namespace App\Controller;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\HttpFoundation\Request;
+
 use App\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\Request;
 
-#[AsController]
-class MyclassTest extends AbstractController
+
+class DeleteProductController extends AbstractController
 {
+    private $client;
+
     public function __construct(HttpClientInterface $client)
     {
         $this->client = $client;
@@ -16,30 +19,15 @@ class MyclassTest extends AbstractController
 
     /**
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Exception
+     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
      */
-    #[Route(
-        name: 'delete_post',
-        path: '/products/{id}',
-        methods: ['DELETE'],
-        defaults: [
-            '_api_item_operation_name' => 'delete',
-        ],
-        requirements: [
-            'id' => '\d+',
-        ],
-    )]
-    public function deleteProduct(Request $request,$id): \Symfony\Component\HttpFoundation\JsonResponse
+    public function __invoke(Request $request,$id): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
         $product = $entityManager->getRepository(Product::class)->find($id);
-
-        if(empty($product->getProductMicroserviceId())) {
-            throw $this->createNotFoundException(
-                'No product found for id ' . $product->getProductMicroserviceId()
-            );
+        if (!$product) {
+            return $this->json(['message' => 'Product not found'], 404);
         }
 
         $response = $this->client->request(
@@ -48,12 +36,8 @@ class MyclassTest extends AbstractController
         );
 
         if($response->getStatusCode() === 201 || $response->getStatusCode() === 200) {
+
             $entityManager = $this->getDoctrine()->getManager();
-            if (!$product) {
-                throw $this->createNotFoundException(
-                    'No product found for id ' . $id
-                );
-            }
             $entityManager->remove($product);
             $entityManager->flush();
 

@@ -4,8 +4,3 @@
 authentication_token:
     path: /authentication_token
     methods: ['POST']
-
-product:
-    path: /products/{id}
-    controller: App\Controller\MyclassTest::deleteProduct
-    methods: ['DELETE']

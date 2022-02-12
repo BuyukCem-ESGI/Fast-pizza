@@ -7,7 +7,7 @@ const ipAddress = ip.address();
 require("./lib/mongo");
 const userRoute = require('./routes/user.route');
 const productRoute = require('./routes/product.route');
-const supplementRoute = require('./routes/supplement.route');
+const menuRoute = require('./routes/menu.route');
 const isAuth= require("./middlewares/verifyAuthorization");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,14 +20,9 @@ app.use(cors());
 app.all('/users')
 app.all('/users/*')
 userRoute(app)
-
+menuRoute(app)
 //app.use(isAuth.verifyAuthorization);
 productRoute(app)
-supplementRoute(app)
-
-app.get('/', function (req, res) {
-    res.send('Hello World!');
-  });
 
 app.listen(PORT, () => {
     console.log("Server is running on port " + PORT);
