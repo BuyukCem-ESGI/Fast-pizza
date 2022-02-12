@@ -26,7 +26,6 @@ class PatchProductController extends AbstractController
 
         $dataRequest = $request->getContent();
         $data = json_decode($dataRequest, true);
-
         $entityManager = $this->getDoctrine()->getManager();
         $product = $entityManager->getRepository(Product::class)->find($id);
         if (!$product) {
@@ -54,11 +53,8 @@ class PatchProductController extends AbstractController
             if(!empty($res['imagesUrl'])) {
                 $product->setImageUrl($res['imagesUrl']);
             }
-
-            $entityManager=$this->getDoctrine()->getManager();
             $entityManager->persist($product);
             $entityManager->flush();
-
             return $this->json(['message' => 'Product updated successfully'], 201);
         }else {
             return $this->json(['message' => 'Product not updated'], 400);

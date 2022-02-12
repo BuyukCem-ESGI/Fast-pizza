@@ -10,12 +10,14 @@ const ProductSchema = new Schema({
         type: String,
         required: true
     },
-    price: [
-        {
-            taille: String,
-            price: Number
-        }
-    ],
+    price: {
+        type: Number,
+        required: true
+    },
+    typeProduct: {
+        type: String,
+        required: true
+    },
     date_insert: {
         type: Date,
         default: Date.now

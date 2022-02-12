@@ -5,6 +5,7 @@
             <div class="row">
                 <button class="btn btn-success" style="margin: 20px" @click="create">Create new product</button>
             </div>
+            <span v-if="empty" class="text-danger">There is no product</span>
             <div class="row" v-for="(product, index) in getProductList" :key="index">
                 <div class="col-md-8 card" style="margin: 10px">
                 <div class="row" style="padding: unset">
@@ -38,49 +39,14 @@
 </template>
 
 <script>
-const data = [
-    {
-        _id: "1",
-        name: "type 1",
-        description: "description 1",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-
-    {_id: "2",
-        name: "type 2",
-        description: "description 2",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-    {_id: "3",
-        name: "type 3",
-        description: "description 3",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-    {
-       _id: "4",
-        name: "type 4",
-        description: "description 4",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-    {_id: "5",
-        name: "type 5",
-        description: "description 5",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    }
-]
-
 import ProductService from '../services/product.service'
 
 export default {
   name: "ProductHandler",
   data() {
     return {
-        productList: []
+        productList: [],
+        empty: false
     };
   },
   computed: {
@@ -91,13 +57,14 @@ export default {
   mounted() {
       try{
           ProductService.getAllProducts().then((response) => {
+            console.log(response.data)
               this.productList = response.data
+              this.empty = false
           })
-      }catch(e) {
-          console.log(e)
-      }
 
-    this.productList = data
+      }catch(e) {
+        this.empty = true
+      }
   },
   methods: {
       removeProduct(product,index) {
@@ -108,7 +75,7 @@ export default {
       },
       redirect(product) {
           console.log(product)
-          this.$router.push("/product-form/"+product._id);
+          this.$router.push("/product-form/"+product.id);
       },
       create() {
           this.$router.push("/product-form");

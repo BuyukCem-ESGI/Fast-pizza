@@ -98,43 +98,9 @@
 
 <script>
 
-const data = [
-    {
-        _id: "1",
-        name: "type 1",
-        description: "description 1",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-
-    {_id: "2",
-        name: "type 2",
-        description: "description 2",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-    {_id: "3",
-        name: "type 3",
-        description: "description 3",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-    {
-       _id: "4",
-        name: "type 4",
-        description: "description 4",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    },
-    {_id: "5",
-        name: "type 5",
-        description: "description 5",
-        price: 12,
-        image: "https://myvam.s3.eu-west-3.amazonaws.com/e1b3xDT7Ev7XbCYrnYSfBMXlUOS6YJBHJERbzcrVSmL8rG8yDg6FKLvNEPD3KqStgXc7GOEN6j6oYhnt"
-    }
-]
+import MenuService from "../services/menu.service"
 import ProductService from '../services/product.service'
-import Multiselect from '@vueform/multiselect';
+import Multiselect from '@vueform/multiselect'
 export default {
   name: "ProductForm",
   components: {
@@ -168,25 +134,24 @@ export default {
     }
   },
   mounted() {
-
-    this.selectedProducts = data.map((item) => {
-        item.value = item._id
-        item.label = item.name 
-        return item
-     });
+    ProductService.getAllProducts().then((response)=>{
+       this.selectedProducts = response.data.map((item) => {
+         item.value = "products/"+item.id
+         item.label = item.name
+         return item
+       });
+    })
     if (!this.$store.state.auth.status.loggedIn) {
       this.$router.push("/login");
     } else {
       if (this.$route.params.id) {
-        let d = data[this.$route.params.id]
-        this.name = d.name
-        this.description = d.description
-        this.price = d.price
-        this.image = d.image
-        this.value = ["1","4"]
-        
-        ProductService.getProductById().then((response)=> {
-          console.log(response)
+        ProductService.getProductById(this.$route.params.id).then((response)=> {
+          console.log(response.data)
+          this.name = response.data.name
+          this.selectedTypeValue = response.data.typeProduct
+          this.description = response.data.description
+          this.price = response.data.price
+          this.image = response.data.image
         })
       }
     }
@@ -199,15 +164,12 @@ export default {
       if(this.selectedTypeValue === "Menu" && this.value.length <= 0) this.showValidError.push("Add product")
       if (isNaN(parseInt(this.price)))
               this.showValidError.push("Enter price")
-      if (this.value.length === 0)
-            this.showValidError.push("Select products")
       if(this.showValidError.length <= 0) {
         const jsonData = {
           name: this.name,
           description: this.description,
-          type: this.selectedTypeValue,
-          //price: this.taillesData,
-          price: this.price,
+          typeProduct: this.selectedTypeValue,
+          price: String(this.price),
           products: this.value,
           image: this.image.toString()
         }
@@ -216,7 +178,14 @@ export default {
             console.log(response)
           })
         }else {
-           ProductService.addProduct(jsonData)
+          console.log(jsonData)
+          if(this.selectedTypeValue === "Menu") {
+            MenuService.addMenus(jsonData).then((response)=> {
+              console.log(response)
+            })
+          }else{
+            ProductService.addProduct(jsonData)
+          }
         }
         this.imagesArray = null
         this.name = ""

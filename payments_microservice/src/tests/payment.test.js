@@ -82,7 +82,7 @@ export const paymentTest = (app, request) => {
                 "customerId": customerId,
                 "cardNumber": "4242424242424242",
                 "cardExpMonth": "12",
-                "cardExpYear": "2021",
+                "cardExpYear": "2022",
                 "cvv": "123",
                 "cardName": "Test Card",
                 "country": "France",
@@ -90,6 +90,7 @@ export const paymentTest = (app, request) => {
             })
             .then(response => {
                 const res = JSON.parse(response.text)
+                console.log(res)
                 expect(response.status).toBe(200)
                 expect(res).toHaveProperty('cards')
             });
@@ -104,7 +105,7 @@ export const paymentTest = (app, request) => {
             .then(response => {
                 const res = JSON.parse(response.text)
                 expect(response.status).toBe(200)
-                expect(res.cardDetails[0].cardExpDetails).toBe('12/2021')
+                expect(res.cardDetails[0].cardExpDetails).toBe('12/2022')
                 expect(res.cardDetails[0].cardLast4).toBe('4242')
                 cardId = res.cardDetails[0].cardId;
             });

@@ -7,9 +7,9 @@ class ProductService {
 
     addProduct(data) {
         console.log(data);
-        axios.post(API_URL + "/products", {
+        axios.post(API_URL + "/products",
             data
-        },{
+        ,{
             headers: {'Authorization': "Bearer "+authHeader()}
         }).then(function (response) {
             //handle success
@@ -22,19 +22,17 @@ class ProductService {
 
     updateProduct(data,id) {
         console.log(data);
-        var config = {
+        return axios({
             method: 'patch',
             url: API_URL+'/products/'+id,
             headers: {'Authorization': "Bearer "+authHeader()},
             data
-          };
-          
-        return  axios(config)
+        });
     }
 
     getProductById(id) {
       var config = {
-        method: 'get',
+        method: 'GET',
         url: API_URL + '/products/'+id,
         headers: {'Authorization': "Bearer "+authHeader()},
       };
@@ -46,15 +44,13 @@ class ProductService {
     }
 
     deleteProduct(id) {
-        var config = {
+        return axios( {
             method: 'delete',
             url:  API_URL+'/products/'+id,
-            headers: { 
-              'Content-Type': 'application/json'
+            headers: {
+                'Authorization': "Bearer "+authHeader()
             }
-          };
-          
-        return axios(config)
+        })
     }
 }
 

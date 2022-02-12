@@ -23,8 +23,6 @@ class PostMenuController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $dataRequest = $request->getContent();
         $data = json_decode($dataRequest, true);
-
-
         foreach ($data['products'] as $key => $value) {
             $id = preg_replace('/products\//i', "", $value);
             $product = $entityManager->getRepository(Product::class)->find($id);
@@ -55,6 +53,7 @@ class PostMenuController extends AbstractController
             $menu->setName($res["menu"]["name"]);
             $menu->setDescription($res["menu"]["description"]);
             $menu->setPrice($res["menu"]["price"]);
+            $menu->setMenuMicroserviceId($res["menu"]["_id"]);
 
             foreach ($res["menu"]["products"] as $key => $value) {
                 $product = $entityManager->getRepository(Product::class)->getProductByMicroservieId($res["menu"]["products"][$key]);
@@ -64,7 +63,6 @@ class PostMenuController extends AbstractController
                     $menu->addProduct($product[0]);
                 }
             }
-            dd($menu->getProducts());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($menu);
             $entityManager->flush();

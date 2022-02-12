@@ -28,6 +28,7 @@ class PostProductController extends AbstractController
                "body" => $data
             ]
         );
+
         if($response->getStatusCode() === 201) {
             $product = new Product();
 
@@ -36,7 +37,9 @@ class PostProductController extends AbstractController
             $product->setProductMicroserviceId($res['_id']);
             $product->setName($res['name']);
             $product->setPrice($res['price']);
+            $product->setTypeProduct($res['typeProduct']);
             $product->setDescription($res['description']);
+
             if(!empty($res['imagesUrl'])) {
                 $product->setImageUrl($res['imagesUrl']);
             }

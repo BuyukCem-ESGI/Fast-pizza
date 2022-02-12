@@ -71,7 +71,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     ],
     itemOperations: [
         'get',
-        'patch' => [
+        'put_productq' => [
             'method' => 'PATCH',
             'path' => '/products/{id}',
             'controller' => PatchProductController::class,
@@ -166,10 +166,32 @@ class Product
      * @Assert\NotNull(message="Le prix du produit ne peut pas être null",
      *     groups={"write_product_post","write_product_patch"})
      * @Assert\PositiveOrZero(groups={"write_product_post","write_product_patch"})
-     * @ORM\Column(type="array")
+     * @ORM\Column(type="decimal", precision=10, scale=2)
      */
     #[Groups(['write_product_post', 'write_product_patch', 'read_products_get', 'read_categorys_get'])]
     private $price;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    #[Groups(['write_product_post', 'write_product_patch', 'read_products_get', 'read_categorys_get'])]
+    private $typeProduct;
+
+    /**
+     * @return mixed
+     */
+    public function getTypeProduct()
+    {
+        return $this->typeProduct;
+    }
+
+    /**
+     * @param mixed $typeProduct
+     */
+    public function setTypeProduct($typeProduct): void
+    {
+        $this->typeProduct = $typeProduct;
+    }
 
     /**
      * @Assert\NotBlank(message="La référence du produit ne peut pas être vide",
@@ -276,15 +298,14 @@ class Product
         $this->description = $description;
         return $this;
     }
-
-    public function getPrice(): ?array
+    public function getPrice(): ? float
     {
         return $this->price;
     }
 
-    public function setPrice(array $price): self
+    public function setPrice(string $price): self
     {
-        $this->price = $price;
+        $this->price = floatval($price);
         return $this;
     }
 

@@ -9,11 +9,13 @@ function respond(respCode, result, res) {
 
 exports.createProduct = async (req, res, next) => {
     body = req.body
+    console.log(body)
     let imagesUrl = ""
     if(body.image){
         imagesUrl = await aws.addImageToBucket(body.image)
     }
     const product = await Product.exists({ name: body.name });
+    console.log(product)
     if(product) {
         res.status(400).json({
             message: "Product already exists"
@@ -24,10 +26,12 @@ exports.createProduct = async (req, res, next) => {
         newProduct
             .save()
             .then((product) => {
+                console.log(product);
                 console.log(newProduct);
                 res.status(201).json(product);
             })
             .catch((err) => {
+                console.log(err);
                 if (err.name === "ValidationError") {
                     console.log("validation error 400");
                     res.status(400).json(err.message);
@@ -72,7 +76,9 @@ exports.updateProduct = async (req, res, next) => {
         if (req.file) {
             req.body.imagesUrl = await aws.addImageToBucket(req)
         }
-        Product.findOneAndUpdate({_id: req.params.id},req.body ,(err,pro) => {
+        Product.findOneAndUpdate({_id: req.params.id},req.body,{
+            new: true
+        },(err,pro) => {
             if(err) {
                res.status(500).json(err)
             }else {

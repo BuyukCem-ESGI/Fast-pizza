@@ -136,7 +136,7 @@ class Menu
     private $description;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="decimal", precision=10, scale=2)
      */
     #[Groups(['write_menu_post', 'write_menu_patch', 'read_menus_get'])]
     private $price;
@@ -201,10 +201,9 @@ class Menu
         return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(string $price): self
     {
-        $this->price = $price;
-
+        $this->price = floatval($price);
         return $this;
     }
 
