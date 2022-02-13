@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\DeleteProductController;
 use App\Controller\PatchProductController;
 use App\Controller\PostProductController;
@@ -118,7 +120,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             ],
         ],
     ],*/
-)]
+),
+ApiFilter(SearchFilter::class, properties: ['typeProduct'=>'exact']),
+]
 class Product
 {
     /**
