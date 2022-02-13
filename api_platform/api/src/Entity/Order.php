@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['Read-order-delivery', 'read-addresses-get','read_user_delivery']],
     collectionOperations: [
         'get' =>[
-            'security' => ['is_granted("ROLE_ADMIN")']
+            'security' => 'is_granted("ROLE_ADMIN")'
         ],
         'post' => [
             "security" => "is_granted('ROLE_CUSTOMER')",
