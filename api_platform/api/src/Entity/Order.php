@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use App\Controller\OrderController;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -18,7 +19,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'get' =>[
             'security' => ['is_granted("ROLE_ADMIN")']
         ],
-        'post' => ["security" => "is_granted('ROLE_CUSTOMER')"],
+        'post' => [
+            "security" => "is_granted('ROLE_CUSTOMER')",
+            "method" => "POST",
+            "path" => "/orders",
+            "controller" => OrderController::class,
+            "read" => false,
+            "write" => false
+        ]
     ],
     itemOperations: [
         'delete' => ['security' => "is_granted('ROLE_ADMIN')"],
@@ -34,7 +42,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
        ],
    ]
 )]
-class Order
+class Order extends \Doctrine\Common\Collections\ArrayCollection
 {
     /**
      * @ORM\Id
@@ -42,7 +50,6 @@ class Order
      * @ORM\Column(type="integer")
      */
     private $id;
-
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
@@ -69,14 +76,69 @@ class Order
     private $deliveryDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
+     *
      */
     #[Groups(['Read-order-delivery'])]
-    private $delivery;
+    private $deliverStatus;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @return mixed
+     */
+    public function getDeliverStatus()
+    {
+        return $this->deliverStatus;
+    }
+
+    /**
+     * @param mixed $deliverStatus
+     */
+    public function setDeliverStatus($deliverStatus): void
+    {
+        $this->deliverStatus = $deliverStatus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdress()
+    {
+        return $this->adress;
+    }
+
+    /**
+     * @param mixed $adress
+     */
+    public function setAdress($adress): void
+    {
+        $this->adress = $adress;
+    }
+
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $paymentId;
+
+    /**
+     * @return mixed
+     */
+    public function getPaymentId()
+    {
+        return $this->paymentId;
+    }
+
+    /**
+     * @param mixed $paymentId
+     */
+    public function setPaymentId($paymentId): void
+    {
+        $this->paymentId = $paymentId;
+    }
+
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $created_at;
 
@@ -88,7 +150,7 @@ class Order
     /**
      * @ORM\ManyToOne(targetEntity=Address::class, inversedBy="Address")
      */
-    private $adresse;
+    private $address;
 
     public function getId(): ?int
     {
@@ -178,15 +240,14 @@ class Order
         return $this;
     }
 
-    public function getAdresse(): ?Address
+    public function getAddress(): ?Address
     {
-        return $this->adresse;
+        return $this->address;
     }
 
-    public function setAdresse(?Address $adresse): self
+    public function setAddress(?Address $adress): self
     {
-        $this->adresse = $adresse;
-
+        $this->address = $adress;
         return $this;
     }
 

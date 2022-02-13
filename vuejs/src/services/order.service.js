@@ -7,9 +7,7 @@ class OrderService {
 
     addOrder(data) {
         console.log(data);
-        axios.post(API_URL + "/order", {
-            data
-        },{
+        axios.post(API_URL + "/orders",data,{
             headers: {'Authorization': "Bearer "+authHeader()}
         }).then(function (response) {
             //handle success

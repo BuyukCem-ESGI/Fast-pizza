@@ -4,12 +4,4 @@
 authentication_token:
     path: /authentication_token
     methods: ['POST']
-    
 
-payment_methods:
-    path: /create_payment
-    methods: ['POST']
-    defaults:
-        _controller: App\Controller\PaymentController::createPayment
-        _api_resource_class: App\Entity\Payment
-        _api_item_operation_name: createPayment
