@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\OrderController;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -41,7 +43,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
            'groups' => ['Read-order-delivery']
        ],
    ]
-)]
+),ApiFilter(SearchFilter::class, properties: ['deliverStatus'=>'exact'])]
 class Order extends \Doctrine\Common\Collections\ArrayCollection
 {
     /**
@@ -149,7 +151,9 @@ class Order extends \Doctrine\Common\Collections\ArrayCollection
 
     /**
      * @ORM\ManyToOne(targetEntity=Address::class, inversedBy="Address")
+     *
      */
+    //#[Groups(['Read-order-delivery'])]
     private $address;
 
     public function getId(): ?int
