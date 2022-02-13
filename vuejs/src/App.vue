@@ -21,6 +21,11 @@
           </li>
           <li  class="nav-item active">
               <router-link to="/user-orders" class="nav-link">
+                My Orders
+              </router-link>
+          </li>
+          <li  class="nav-item active">
+              <router-link to="/pizzeria-orders" class="nav-link">
                 Orders
               </router-link>
           </li>

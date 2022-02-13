@@ -52,6 +52,18 @@ class ProductService {
             }
         })
     }
+
+    getPizzas() {
+        return axios.get(API_URL + '/products?page=1&typeProduct=Pizza',{headers: {'Authorization': "Bearer "+authHeader()}});
+    }
+
+    getMenus() {
+        return axios.get(API_URL + '/products?page=1&typeProduct=Menu',{headers: {'Authorization': "Bearer "+authHeader()}});
+    }
+
+    getExtras() {
+        return axios.get(API_URL + '/products?page=1&typeProduct=Extras',{headers: {'Authorization': "Bearer "+authHeader()}});
+    }
 }
 
 export default new ProductService();

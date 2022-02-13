@@ -152,9 +152,11 @@ export default {
           order: this.$store.state.cart.products,
           card: {
             cardNumber: this.cardNumber,
-            cardExpiry: this.cardExpiry,
-            cardCvc: this.cardCvc,
-          }
+            cardExpMonth: this.cardExpiry.split("/")[0].trim(),
+            cardExpYear: this.cardExpiry.split("/")[1].trim(),
+            cardCvv: this.cardCvc,
+          },
+          total: this.total
         }
         OrderService.addOrder(objectData).then((response) => {
           console.log("response",response)

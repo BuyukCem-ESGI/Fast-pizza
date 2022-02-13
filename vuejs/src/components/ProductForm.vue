@@ -101,6 +101,7 @@
 import MenuService from "../services/menu.service"
 import ProductService from '../services/product.service'
 import Multiselect from '@vueform/multiselect'
+import { notify } from "@kyvg/vue3-notification";
 export default {
   name: "ProductForm",
   components: {
@@ -116,7 +117,7 @@ export default {
       selectedProducts: [],
       //tailles: [],
       //taillesData: [],
-      types: ["Pizza","Menu","Supplement"],
+      types: ["Pizza","Menu","Extra"],
       image: '',
       validImage: true,
       name: "",
@@ -174,17 +175,86 @@ export default {
           image: this.image.toString()
         }
         if(this.$route.params.id) {
-          ProductService.updateProduct(jsonData,this.$route.params.id).then((response) => {
-            console.log(response)
-          })
-        }else {
-          console.log(jsonData)
-          if(this.selectedTypeValue === "Menu") {
-            MenuService.addMenus(jsonData).then((response)=> {
-              console.log(response)
+          if(this.selectedTypeValue !== "Menu") {
+            ProductService.updateProduct(jsonData,this.$route.params.id)
+            .then((response) => {
+              if(response.status === 201) {
+                notify({
+                    title: "SUCCESS",
+                    text: "Update succeed",
+                    type: 'success'
+                });
+              }
             })
+            .catch(function (error) {
+              if (error.response) {
+                  notify({
+                  title: "ERROR",
+                  text: error.response,
+                  type: 'error'
+                  });
+              }
+            }); 
+          }else {
+            MenuService.updateMenus(jsonData)
+            .then((response)=> {
+              console.log(response)
+              if(response.status === 201) {
+                notify({
+                    title: "SUCCESS",
+                    text: "Update succeed",
+                    type: 'success'
+                });
+            }
+            })
+            .catch(function (error) {
+              if (error.response) {
+                  notify({
+                  title: "ERROR",
+                  text: error.response,
+                  type: 'error'
+                  });
+              }
+            }); 
+          } 
+        }else {
+          if(this.selectedTypeValue === "Menu") {
+            MenuService.addMenus(jsonData)
+            .then((response)=> {
+              console.log(response)
+              notify({
+                    title: "SUCCESS",
+                    text: "Create",
+                    type: 'success'
+                });
+            })
+            .catch(function (error) {
+              if (error.response) {
+                  notify({
+                  title: "ERROR",
+                  text: error.response,
+                  type: 'error'
+                  });
+              }
+            }); 
           }else{
             ProductService.addProduct(jsonData)
+            .then(() => {
+              notify({
+                    title: "SUCCESS",
+                    text: "Create",
+                    type: 'success'
+                });
+            })
+            .catch(function (error) {
+              if (error.response) {
+                  notify({
+                  title: "ERROR",
+                  text: error.response,
+                  type: 'error'
+                  });
+              }
+            }); 
           }
         }
         this.imagesArray = null

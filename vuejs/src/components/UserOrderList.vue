@@ -16,7 +16,6 @@
                 <td>Mark</td>
                 <td>Otto</td>
                 <td >@mdo</td>
-                <td> <button class="btn btn-success" @click="setToReady">Ready</button></td>
                 </tr>
             </tbody>
         </table>
@@ -27,10 +26,8 @@
 
 
 <script>
-import { notify } from "@kyvg/vue3-notification";
-import OrderService from '../services/order.service';
 export default {
-  name: "OrderList",
+  name: "UserOrderList",
   props: {
     data: {
         type: Object,
@@ -42,29 +39,6 @@ export default {
    return {
     orders: []
   }
-  },
-  methods: {
-      setToReady() {
-        OrderService.changeOrderStatus()
-        .then(response => {
-            if(response.status === 201) {
-                notify({
-                    title: "SUCCESS",
-                    text: "change taken into account",
-                    type: 'success'
-                });
-            }
-        })
-        .catch(function (error) {
-            if (error.response) {
-                notify({
-                title: "ERROR",
-                text: error.response,
-                type: 'error'
-                });
-            }
-        }); 
-      }
   },
   created() {
       this.orders = this.data

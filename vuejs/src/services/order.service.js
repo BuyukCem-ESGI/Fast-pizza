@@ -7,9 +7,7 @@ class OrderService {
 
     addOrder(data) {
         console.log(data);
-        axios.post(API_URL + "/order", {
-            data
-        },{
+        axios.post(API_URL + "/orders",data,{
             headers: {'Authorization': "Bearer "+authHeader()}
         }).then(function (response) {
             //handle success
@@ -20,9 +18,24 @@ class OrderService {
         });
     }
 
-    getAllOrder() {
+    getAllOrders() {
       return axios.get(API_URL + '/order',{headers: {'Authorization': "Bearer "+authHeader()}});
     }
+
+    getUserOrders() {
+        return axios.get(API_URL + '/orders',{headers: {'Authorization': "Bearer "+authHeader()}});
+    }
+
+    getPizzeriaOrders() {
+        return axios.get(API_URL + '/orders?page=1&deliveryStatus="PROGRESS"',{headers: {'Authorization': "Bearer "+authHeader()}});
+    }
+
+    changeOrderStatus() {
+       
+    }
+
+
+    getNotReadyOrders
 
 }
 

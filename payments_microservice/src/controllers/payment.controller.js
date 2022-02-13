@@ -3,6 +3,7 @@ import {stripe} from "../services/stripe.service";
 
 
 exports.newCustomer = async (req, res, next) => {
+    console.log('newCustomer');
     if (!req.body.email) {
         res.status(400).json({
             message: "Email is required"

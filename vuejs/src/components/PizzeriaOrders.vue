@@ -7,7 +7,7 @@ import OrderList from './OrderList.vue'
 import OrderService from '../services/order.service'
 import { notify } from "@kyvg/vue3-notification";
 export default {
-  name: "UserOrders",
+  name: "PizzeriaOrders",
   components: {
       OrderList
   },
@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     refreshData() {
-        OrderService.getUserOrders()
+      OrderService.getPizzeriaOrders()
       .then(response => {
           this.orders = response.data
       })

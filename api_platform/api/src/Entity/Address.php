@@ -51,7 +51,7 @@ class Address
     private $street;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     #[Groups(['read-addresses-get'])]
     private $department;
@@ -68,14 +68,9 @@ class Address
     #[Groups(['read-addresses-get'])]
     private $city;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    #[Groups(['read-addresses-get'])]
-    private $country;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $created_at;
 
@@ -197,32 +192,18 @@ class Address
     }
 
     /**
-     * @return Collection|Order[]
+     * @return ArrayCollection
      */
-    public function getYes(): Collection
+    public function getOrders(): ArrayCollection
     {
         return $this->orders;
     }
 
-    public function addYe(Order $ye): self
+    /**
+     * @param ArrayCollection $orders
+     */
+    public function setOrders(ArrayCollection $orders): void
     {
-        if (!$this->orders->contains($ye)) {
-            $this->orders[] = $ye;
-            $ye->setAdresse($this);
-        }
-
-        return $this;
-    }
-
-    public function removeYe(Order $ye): self
-    {
-        if ($this->orders->removeElement($ye)) {
-            // set the owning side to null (unless already changed)
-            if ($ye->getAdresse() === $this) {
-                $ye->setAdresse(null);
-            }
-        }
-
-        return $this;
+        $this->orders = $orders;
     }
 }
