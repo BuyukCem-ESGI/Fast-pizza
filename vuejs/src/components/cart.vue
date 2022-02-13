@@ -6,23 +6,35 @@
           <h1>Confirmer la commande</h1>
       </div>
       <div class="row">
-      <h3>Information personnelle</h3>
+      <h4>Information personnelle</h4>
         <div class="col-md-12">
           <div class="form-group">
           <div class="form-group">
               <label for="exampleInputEmail1">Nom</label>
-              <input type="text" v-model="userData.lastName" class="form-control"  placeholder="Veuillez saisir votre nom"  @change="validate">
+              <input type="text" v-model="userData.lastName" class="form-control"  placeholder="Veuillez saisir votre nom" >
+               <div v-if="errors.lastName" class="error">
+                <small>{{ errors.lastName }}</small>
+              </div>
             </div>
               <label for="exampleInputEmail1">Prénom</label>
-              <input type="text" v-model="userData.firstName" class="form-control"  placeholder="Veuillez saisir votre prénom"  @change="validate">
+              <input type="text" v-model="userData.firstName" class="form-control"  placeholder="Veuillez saisir votre prénom">
+               <div v-if="errors.firstName" class="error">
+                <small>{{ errors.firstName }}</small>
+              </div>
             </div>
           <div class="form-group">
               <label for="exampleInputEmail1">Mobile</label>
-              <input type="number" v-model="userData.phoneNumber" class="form-control"  placeholder="Pour vous contacter si besoin"  @change="validate">
+              <input type="number" v-model="userData.phoneNumber" class="form-control"  placeholder="Pour vous contacter si besoin">
+               <div v-if="errors.phoneNumber" class="error">
+              <small>{{ errors.phoneNumber }}</small>
+            </div>
             </div>
             <div class="form-group">
               <label for="exampleInputEmail1">Email address</label>
-              <input type="email" v-model="userData.email" class="form-control"  placeholder="Pour vous envoyer une confirmation"  @change="validate">
+              <input type="email" v-model="userData.email" class="form-control"  placeholder="Pour vous envoyer une confirmation">
+               <div v-if="errors.email" class="error">
+              <small>{{ errors.email }}</small>
+            </div>
             </div>
         </div>
       </div>
@@ -38,30 +50,33 @@
               country="fr"
           >
           </vue-google-autocomplete>
+          <div v-if="errors.address" class="error">
+              <small>{{ errors.address }}</small>
+            </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" style="margin-top: 20px">
         <div class="col-md-12">
         <h4>Moyen de paiement</h4>
           <div class="form-group">
             <label>Card number</label>
-            <input :data-error="(cardErrors.cardNumber)?true:false" v-model="cardNumber" type="tel" class="form-control" placeholder="#### #### #### ####" v-cardformat:formatCardNumber @change="validate">
-            <div v-if="cardErrors.cardNumber" class="error">
-              <small>{{ cardErrors.cardNumber }}</small>
+            <input :data-error="(errors.cardNumber)?true:false" v-model="cardNumber" type="tel" class="form-control" placeholder="#### #### #### ####" v-cardformat:formatCardNumber @change="validate">
+            <div v-if="errors.cardNumber" class="error">
+              <small>{{ errors.cardNumber }}</small>
             </div>
           </div>
           <div class="form-group">
             <label>Card Expiry</label>
-            <input :data-error="(cardErrors.cardExpiry)?true:false" v-model="cardExpiry" maxlength="10" class="form-control" v-cardformat:formatCardExpiry @change="validate">
-            <div v-if="cardErrors.cardExpiry" class="error">
-              <small>{{ cardErrors.cardExpiry }}</small>
+            <input :data-error="(errors.cardExpiry)?true:false" v-model="cardExpiry" maxlength="10" class="form-control" v-cardformat:formatCardExpiry @change="validate">
+            <div v-if="errors.cardExpiry" class="error">
+              <small>{{ errors.cardExpiry }}</small>
             </div>
           </div>
           <div class="form-group">
             <label>Card CVC</label>
-            <input :data-error="(cardErrors.cardCvc)?true:false" v-model="cardCvc" class="form-control" v-cardformat:formatCardCVC @change="validate">
-            <div v-if="cardErrors.cardCvc" class="error">
-              <small>{{ cardErrors.cardCvc }}</small>
+            <input :data-error="(errors.cardCvc)?true:false" v-model="cardCvc" class="form-control" v-cardformat:formatCardCVC @change="validate">
+            <div v-if="errors.cardCvc" class="error">
+              <small>{{ errors.cardCvc }}</small>
             </div>
           </div>
         </div>
@@ -102,7 +117,8 @@ export default {
       cardNumber: null,
       cardExpiry: null,
       cardCvc: null,
-      cardErrors: {},
+      errors: {},
+
     }
   },
   mounted() {
@@ -118,7 +134,6 @@ export default {
       count+=product.data.price * product.quantity
     }
     this.total = count
-    console.log("count", count)
   },
 
   methods: {
@@ -130,7 +145,7 @@ export default {
     },
     paid() {
       this.validate()
-      if(Object.keys(this.cardErrors).length === 0) {
+      if(Object.keys(this.errors).length === 0) {
         const objectData = {
           adress: this.address,
           userData: this.userData,
@@ -147,27 +162,41 @@ export default {
           console.log("response",response)
         })
       }
-      console.log("adress", this.address)
-      console.log("user data", this.userData)
     },
     validate (){
       console.log("control")
           // init
-          this.cardErrors = {};
-          
+          this.errors = {};
+          const  reg = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/
           // validate card number
           if(!this.$cardFormat.validateCardNumber(this.cardNumber)){
-            this.cardErrors.cardNumber = "Invalid Credit Card Number.";
+            this.errors.cardNumber = "Invalid Credit Card Number.";
           }
 
           // validate card expiry
           if (!this.$cardFormat.validateCardExpiry(this.cardExpiry)) {
-            this.cardErrors.cardExpiry = "Invalid Expiration Date.";
+            this.errors.cardExpiry = "Invalid Expiration Date.";
           }
 
           // validate card CVC
           if (!this.$cardFormat.validateCardCVC(this.cardCvc)) {
-            this.cardErrors.cardCvc = "Invalid CVC.";
+            this.errors.cardCvc = "Invalid CVC.";
+          }
+
+          if(this.userData.lastName.length <= 0 ) {
+            this.errors.lastName = "Invalid lastname"
+          }
+
+          if(this.userData.firstName.length <= 0 ) {
+            this.errors.firstName = "Invalid firstname"
+          }
+
+          if(!reg.test(this.userData.email)) {
+            this.errors.email = "Invalide email"
+          }
+
+          if (Object.keys(this.address).length === 0) {
+            this.errors.address = "Invalid address"
           }
 
         },
@@ -196,6 +225,10 @@ export default {
   }
   .error {
     color: red
+  }
+
+  .center-text {
+    text-align: center
   }
 
 </style>

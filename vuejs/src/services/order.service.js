@@ -18,9 +18,24 @@ class OrderService {
         });
     }
 
-    getAllOrder() {
+    getAllOrders() {
       return axios.get(API_URL + '/order',{headers: {'Authorization': "Bearer "+authHeader()}});
     }
+
+    getUserOrders() {
+        return axios.get(API_URL + '/orders',{headers: {'Authorization': "Bearer "+authHeader()}});
+    }
+
+    getPizzeriaOrders() {
+        return axios.get(API_URL + '/orders?page=1&deliveryStatus="PROGRESS"',{headers: {'Authorization': "Bearer "+authHeader()}});
+    }
+
+    changeOrderStatus() {
+       
+    }
+
+
+    getNotReadyOrders
 
 }
 

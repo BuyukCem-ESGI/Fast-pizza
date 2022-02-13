@@ -1,4 +1,5 @@
 <template>
+ <ProductDetailsModal v-if="modalVisible" @close="onClose" :data="modalData"/>
   <div class="card product-card" v-bind:class="getHeight">
     <img :src="data.image" class="card-img-top" @click="detail">
     <div class="row detail-container">
@@ -23,9 +24,12 @@
 </template>
 
 <script>
-
+import ProductDetailsModal from './ProductDetailsModal.vue'
 export default {
   name: "ProductCard",
+  components: {
+    ProductDetailsModal
+  },
   props: {
         productData: {
             type: Object,
@@ -37,12 +41,15 @@ export default {
       return {
         selectedTypeValue: null,
         error: false,
-        data: {}
+        data: {},
+        modalVisible: false,
+       modalData: null,
       }
   },
   methods: {
     detail() {
-        alert("details")
+      this.modalData = this.data
+      this.modalVisible = true
     },
     addToCart() {
       if( this.selectedTypeValue ) {
@@ -51,8 +58,6 @@ export default {
           data: this.data,
           quantity: 1
         }).then(() => {
-          console.log("before emit")
-          console.log("data ",this.$store.state.cart.products)
           this.$emit("inputData",this.$store.state.cart.products);
         })
       }else {
@@ -65,7 +70,10 @@ export default {
       }else {
         this.error = false
       }
-    }
+    },
+    onClose() {
+        this.modalVisible = false;
+      }
   },
   computed: {
     getHeight() {
