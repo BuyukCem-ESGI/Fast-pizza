@@ -80,7 +80,7 @@ class Address
     private $updated_at;
 
     /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="adresse")
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="address")
      */
     #[ApiSubresource(maxDepth: 1)]
     private $orders;

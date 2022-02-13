@@ -235,15 +235,8 @@ class Product
     private $updated_at;
 
     /**
-     * @ORM\ManyToMany(targetEntity=ProductType::class, mappedBy="products")
-     */
-    #[ApiSubresource(
-        maxDepth: 1,
-    )]
-    private $productTypes;
+     * @ORM\ManyToMany(targetEntity=Menu::class, mappedBy="products")
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Menu::class, inversedBy="menu")
      */
     private $menus;
 

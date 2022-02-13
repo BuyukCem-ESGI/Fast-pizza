@@ -156,7 +156,7 @@ class Menu
      */
     private $updated_at;
     /**
-     * @ORM\ManyToMany(targetEntity=Product::class, inversedBy="product")
+     * @ORM\ManyToMany(targetEntity=Product::class, inversedBy="menus")
      */
     #[Groups(['write_menu_patch', 'read_menus_get', 'read_products_get'])]
     #[ApiSubresource(maxDepth: 1)]

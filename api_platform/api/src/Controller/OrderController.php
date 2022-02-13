@@ -88,29 +88,31 @@ class OrderController extends AbstractController
                     $User = $entityManager->getRepository(User::class)->findOneBy(['email' => $data['userData']['email']]);
 
                     if($User && $decodedResPayment["Success"]["paid"] == true) {
-
-                        $address = new Address();
-
-                        $address->setCountry("France");
-                        $address->setStreetNumber($data['adress']['street_number']);
-                        $address->setCity($data['adress']['locality']);
-                        $address->setZipCode($data['adress']["postal_code"]);
-                        $address->setStreet($data['adress']["route"]);
-
-                        $entityManager->persist($address);
-                        $entityManager->flush();
-
-
                         $order = new Order();
+                        $addressOrder = $entityManager->getRepository(Address::class)->findOneBy(
+                            ['streetNumber'=>$data['adress']['streetNumber'],
+                             'street'=>$data['adress']['streetName'],
+                             'city'=>$data['adress']['city'],
+                             'zipCode'=>$data['adress']['postal_code']]);
+                        if($addressOrder){
+                            $order->setAddress($addressOrder);
+                        }else{
+                            $address = new Address();
+                            $address->setCountry("France");
+                            $address->setStreetNumber($data['adress']['street_number']);
+                            $address->setCity($data['adress']['locality']);
+                            $address->setZipCode($data['adress']["postal_code"]);
+                            $address->setStreet($data['adress']["route"]);
+                            $entityManager->persist($address);
+                            $entityManager->flush();
+
+                            $order->setAddress($address);
+                        }
                         $order->setOwner($User);
                         $order->setTotalPrice($data['total']);
                         $order->setStatus("En cours de preparation");
                         $order->setDeliverStatus("En cours de livraison");
                         $order->setPaymentId($decodedResPayment["Success"]["id"]);
-
-                        $order->setAddress($address);
-                        $address->setOrders($order);
-                        $entityManager->persist($order);
 
                         $entityManager->persist($order);
                         $entityManager->flush();

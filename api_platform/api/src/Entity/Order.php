@@ -39,7 +39,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     subresourceOperations: [
        'getDeliveryOrder' => [
            'method' => 'GET',
-           'security' => 'is_granted("ROLE_LIVREUR") and object.getDeliveryman().getId() == user.getId()',
+           'security' => 'is_granted("ROLE_LIVREUR")',
            'groups' => ['Read-order-delivery']
        ],
    ]
@@ -84,6 +84,24 @@ class Order extends \Doctrine\Common\Collections\ArrayCollection
     #[Groups(['Read-order-delivery'])]
     private $deliverStatus;
 
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $created_at;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updated_at;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Address::class, inversedBy="orders")
+     *
+     */
+    #[Groups(['Read-order-delivery'])]
+    private $address;
+
     /**
      * @return mixed
      */
@@ -116,7 +134,6 @@ class Order extends \Doctrine\Common\Collections\ArrayCollection
         $this->adress = $adress;
     }
 
-
     /**
      * @ORM\Column(type="string")
      */
@@ -137,24 +154,6 @@ class Order extends \Doctrine\Common\Collections\ArrayCollection
     {
         $this->paymentId = $paymentId;
     }
-
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $created_at;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $updated_at;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Address::class, inversedBy="Address")
-     *
-     */
-    //#[Groups(['Read-order-delivery'])]
-    private $address;
 
     public function getId(): ?int
     {
