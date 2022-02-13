@@ -104,7 +104,7 @@ class OrderController extends AbstractController
                         $order = new Order();
                         $order->setOwner($User);
                         $order->setTotalPrice($data['total']);
-                        $order->setStatus("Paid");
+                        $order->setStatus("En cours de preparation");
                         $order->setDeliverStatus("En cours de livraison");
                         $order->setPaymentId($decodedResPayment["Success"]["id"]);
 
