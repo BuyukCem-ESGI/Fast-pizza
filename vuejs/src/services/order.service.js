@@ -7,15 +7,9 @@ class OrderService {
 
     addOrder(data) {
         console.log(data);
-        axios.post(API_URL + "/orders",data,{
+        return axios.post(API_URL + "/orders",data,{
             headers: {'Authorization': "Bearer "+authHeader()}
-        }).then(function (response) {
-            //handle success
-            console.log(response);
-        }).catch(function (response) {
-            //handle error
-            console.log(response);
-        });
+        })
     }
 
     getAllOrders() {
@@ -23,20 +17,17 @@ class OrderService {
     }
 
     getUserOrders() {
-        return axios.get(API_URL + '/orders',{headers: {'Authorization': "Bearer "+authHeader()}});
+      return axios.get(API_URL + '/orders',{headers: {'Authorization': "Bearer "+authHeader()}});
     }
 
     getPizzeriaOrders() {
         return axios.get(API_URL + '/orders?page=1&deliveryStatus="PROGRESS"',{headers: {'Authorization': "Bearer "+authHeader()}});
     }
 
-    changeOrderStatus() {
-       
+    changeOrderStatus(data) {
+        return axios.patch(API_URL + '/orders/'+data,{"status": "READY"},
+            {headers: {'Authorization': "Bearer "+authHeader()}});
     }
-
-
-    getNotReadyOrders
-
 }
 
 export default new OrderService();

@@ -22,7 +22,7 @@ class DeleteProductController extends AbstractController
      * @throws \Exception
      * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
      */
-    public function __invoke(Request $request,$id): \Symfony\Component\HttpFoundation\JsonResponse
+    public function getCurrentUser(Request $request,$id): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
         $product = $entityManager->getRepository(Product::class)->find($id);

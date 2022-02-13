@@ -1,59 +1,29 @@
 <template>
   <div class="col-md-8">
     <h2> Extras  </h2>
-      <ProductList />
+    <div class="row">
+      <div class="col-xs-8 col-md-3 container-card" v-for="(product, i) in products" :key="i">
+        <product-card :product-data="product">
+        </product-card>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import ProductList from "./ProductList.vue";
 
+import ProductCard from "./ProductCard.vue";
+import ProductService from "@/services/product.service";
 export default {
   name: "Extra",
   components: {
-      ProductList
+      ProductCard
   },
   data() {
     return {
       content: "",
       products: [
-                {
-                    'author': 'David Deustch',
-                    'title': 'The beginning of Infinity',
-                    'description': 'A book on philosphy about the origins of man',
-                    'img_url': 'https://placeimg.com/640/480/arch'
-                },
-                {
-                    'author': 'Paul Coelho',
-                    'title': 'The Alchemist',
-                    'description': 'The true search for one\'s treasure',
-                    'img_url': 'https://placeimg.com/640/480/arch'
-                },
-                {
-                    'author': 'Susan Kaye Quinn',
-                    'title': 'Open Minds',
-                    'description': 'Sci-Fi Futuristic book about mind reading',
-                    'img_url': 'https://placeimg.com/640/480/arch'
-                },
-                {
-                    'author': 'Robert Kiyosaki',
-                    'title': 'Rich Dad, Poor Dad',
-                    'description': 'Motivational book on wealth building',
-                    'img_url': 'https://placeimg.com/640/480/arch'
-                },
-                {
-                    'author': 'Dan Brown',
-                    'title': 'The Da Vinci Code',
-                    'description': 'Conspiracy theories about secrets of the holy grail',
-                    'img_url': 'https://placeimg.com/640/480/arch'
-                },
-                {
-                    'author': 'Arthur Hailey',
-                    'title': 'The money changers',
-                    'description': 'Travel back in time and experience the banking system',
-                    'img_url': 'https://placeimg.com/640/480/arch'
-                },
-            ]
+      ]
     };
   },
   provide() {
@@ -62,7 +32,13 @@ export default {
     }
   },
   mounted() {
-
+    try{
+      ProductService.getExtras().then((response) => {
+        this.products = response.data
+      })
+    }catch(e) {
+      console.log(e)
+    }
   },
 };
 </script>

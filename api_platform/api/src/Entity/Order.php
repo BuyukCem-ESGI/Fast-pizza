@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\GetOrderController;
 use App\Controller\OrderController;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,8 +19,31 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     normalizationContext: ['groups' => ['Read-order-delivery', 'read-addresses-get','read_user_delivery']],
     collectionOperations: [
-        'get' =>[
-            'security' => 'is_granted("ROLE_ADMIN")'
+        'get' => [
+            'method' => 'GET',
+            'path' => '/orders',
+            'controller' => GetOrderController::class,
+            'read' => false,
+            'write' => false,
+            'openapi_context'=>[
+                'summary' => 'Get all orders',
+                'description' => 'Get all orders',
+                'responses' => [
+                    '200' => [
+                        'description' => 'Returned when successful',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'array',
+                                    'items' => [
+                                        '$ref' => '#/components/schemas/Order',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
         'post' => [
             "security" => "is_granted('ROLE_CUSTOMER')",
@@ -32,8 +56,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     itemOperations: [
         'delete' => ['security' => "is_granted('ROLE_ADMIN')"],
-        'get'=>  ['is_granted("ROLE_ADMIN") OR (is_granted("ROLE_CUSTOMER") and object.getUser() == user.getId())
-                            OR (is_granted("ROLE_LIVREUR") and object.getDeliveryman().getId() == user.getId()'],
+        'get'=>  ['security' => '(is_granted("ROLE_CUSTOMER") and object.getOwner().getId() == user.getId()) or (is_granted("ROLE_LIVREUR") and object.getDeliveryman().owner() == user.getId())'],
         'patch' => ["security" => "is_granted('ROLE_ADMIN')"]
     ],
     subresourceOperations: [
@@ -43,7 +66,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
            'groups' => ['Read-order-delivery']
        ],
    ]
-),ApiFilter(SearchFilter::class, properties: ['deliverStatus'=>'exact'])]
+)]
 class Order extends \Doctrine\Common\Collections\ArrayCollection
 {
     /**
@@ -51,6 +74,7 @@ class Order extends \Doctrine\Common\Collections\ArrayCollection
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups(['Read-order-delivery'])]
     private $id;
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="orders")
@@ -88,6 +112,7 @@ class Order extends \Doctrine\Common\Collections\ArrayCollection
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
+    #[Groups(['Read-order-delivery'])]
     private $created_at;
 
     /**
@@ -216,7 +241,6 @@ class Order extends \Doctrine\Common\Collections\ArrayCollection
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
-
         return $this;
     }
 

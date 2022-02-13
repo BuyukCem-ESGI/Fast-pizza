@@ -27,10 +27,17 @@ export const cart = {
         changeQuantity({commit}, data) {
             commit('changeQuantity',data)
         },
+        clearCart({commit}) {
+            commit('clearCart')
+        }
     },
     mutations: {
         getCart(state) {
            return state.products
+        },
+        clearCart(state) {
+            state.products = []
+            localStorage.removeItem('products')
         },
         addToCart(state,product) {
             if (state.products.length == 0) {

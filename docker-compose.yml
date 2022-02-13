@@ -19,12 +19,12 @@ services:
       - micro-service
 
   composer:
-    image: composer:1.9.0
+    image: composer:latest
     command: install
     depends_on:
       - php
     volumes:
-      - php_socket:/var/run/php
+      - ./api_platform/api:/app
 
   pwa:
     build:

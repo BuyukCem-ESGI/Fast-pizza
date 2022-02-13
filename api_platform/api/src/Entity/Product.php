@@ -264,7 +264,6 @@ class Product
     public function __construct()
     {
         $this->carts = new ArrayCollection();
-        $this->productTypes = new ArrayCollection();
         $this->menus = new ArrayCollection();
     }
 
@@ -387,34 +386,6 @@ class Product
 
         return $this;
     }
-
-    /**
-     * @return Collection|ProductType[]
-     */
-    public function getProductTypes(): Collection
-    {
-        return $this->productTypes;
-    }
-
-    public function addProductType(ProductType $productType): self
-    {
-        if (!$this->productTypes->contains($productType)) {
-            $this->productTypes[] = $productType;
-            $productType->addProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProductType(ProductType $productType): self
-    {
-        if ($this->productTypes->removeElement($productType)) {
-            $productType->removeProduct($this);
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection|Menu[]
      */

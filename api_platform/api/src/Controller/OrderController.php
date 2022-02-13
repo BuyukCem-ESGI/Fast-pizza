@@ -90,9 +90,9 @@ class OrderController extends AbstractController
                     if($User && $decodedResPayment["Success"]["paid"] == true) {
                         $order = new Order();
                         $addressOrder = $entityManager->getRepository(Address::class)->findOneBy(
-                            ['streetNumber'=>$data['adress']['streetNumber'],
-                             'street'=>$data['adress']['streetName'],
-                             'city'=>$data['adress']['city'],
+                            ['streetNumber'=>$data['adress']['street_number'],
+                             'street'=>$data['adress']['route'],
+                             'city'=>$data['adress']['locality'],
                              'zipCode'=>$data['adress']['postal_code']]);
                         if($addressOrder){
                             $order->setAddress($addressOrder);
@@ -111,6 +111,7 @@ class OrderController extends AbstractController
                         $order->setOwner($User);
                         $order->setTotalPrice($data['total']);
                         $order->setStatus("PROGRESS");
+                        $order->setCreatedAt(new \DateTime());
                         $order->setDeliverStatus("En cours de livraison");
                         $order->setPaymentId($decodedResPayment["Success"]["id"]);
 

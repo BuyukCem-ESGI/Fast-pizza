@@ -83,7 +83,7 @@
         </div>
       <div class="row">
         <div class="col-md-12">
-          <button v-if="total && total>0" type="submit" @click="paid" class="btn btn-primary" style="width: 100%">Total à payer {{total}}</button>
+          <button v-if="total && total>0" type="submit" @click="paid" class="btn btn-primary" style="width: 100%">Total à payer {{total}} €</button>
         </div>
       </div>
     </div>
@@ -93,6 +93,7 @@
 <script>
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import OrderService from '../services/order.service'
+import { notify } from "@kyvg/vue3-notification";
 export default {
   name: "cart",
   components: {
@@ -158,8 +159,20 @@ export default {
           },
           total: this.total
         }
-        OrderService.addOrder(objectData).then((response) => {
-          console.log("response",response)
+        OrderService.addOrder(objectData).then(() => {
+          this.$store.dispatch('cart/clearCart')
+          this.$router.push('/user-orders')
+          notify({
+            title: "SUCCESS",
+            text: "Votre commande a été validée",
+            type: 'success',
+          });
+        }).catch(() => {
+          notify({
+            type: 'error',
+            title: 'Erreur',
+            text: 'Une erreur est survenue lors de la commande'
+          })
         })
       }
     },

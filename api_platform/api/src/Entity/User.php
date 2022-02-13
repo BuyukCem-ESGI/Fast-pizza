@@ -105,6 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
     private $id;
 
     /**
@@ -132,7 +133,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
     private $password;
 
     /**
@@ -143,6 +143,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="owner")
      */
+    #[Groups(['read_users_get', 'write_user_post', 'write_user_put'])]
     private $orders;
 
     /**
