@@ -19,10 +19,10 @@
                 Products
             </router-link>
           </li>
-          <li class="nav-item active">
-            <router-link to="/product-type-handler" class="nav-link">
-                Product types
-            </router-link>
+          <li  class="nav-item active">
+              <router-link to="/user-orders" class="nav-link">
+                Orders
+              </router-link>
           </li>
           <li  class="nav-item active">
               <router-link to="/cart" class="nav-link">
@@ -63,7 +63,7 @@
         </div>
       </div>
     </nav>
-
+    <notifications position="top left"/>
     <div class="container-fluid">
       <router-view />
     </div>
@@ -106,5 +106,9 @@ export default {
 <style scoped>
 .bg-nav {
   background-color: #1AC073 !important
+}
+
+.vue-notification-group {
+  top: 60px !important;
 }
 </style>

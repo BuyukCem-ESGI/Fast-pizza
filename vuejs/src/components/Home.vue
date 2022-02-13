@@ -6,10 +6,6 @@
           <div class="col-xs-12 col-md-6 header-left">
             <span class="big-text"> Authentic Home food in UK</span><br>
             <span class="small-text">What2Eat is a courier service in which authentic home cook food is delivered to a customer.</span>
-            <form class="form-inline search-form">
-              <input class="form-control mr-sm-2 input-search" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-warning my-2 my-sm-0" type="submit">Search</button>
-            </form>
           </div>
           <div class="col-md-6 header-right hide">
             <img src="../assets/cooking.png" />

@@ -2,14 +2,13 @@ import { createWebHistory, createRouter } from "vue-router";
 import Home from "./components/Home.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
-
 import ProductForm from './components/ProductForm.vue';
-import ProductTypeHandler from './components/ProductTypeHandler.vue'
 import Profile from "./components/Profile.vue";
 import AdminBoard from "./components/AdminBoard.vue"
 import PizzeriaBoard from "./components/PizzeriaBoard.vue"
 import UserBoard from "./components/UserBoard.vue";
 import ProductHandler from "./components/ProductHandler.vue"
+import UserOrders from "./components/UserOrders.vue"
 const cart = () => import("./components/cart.vue")
 
 const routes = [
@@ -66,15 +65,16 @@ const routes = [
     component: ProductForm,
   },
   {
-    path: "/product-type-handler",
-    name: "product-type-handler",
-    component: ProductTypeHandler,
-  },
-  {
     path: "/product-handler",
     name: "prodcut-handler",
     component: ProductHandler,
+  },
+  {
+    path: "/user-orders",
+    name: "user-orders",
+    component: UserOrders,
   }
+
 ];
 
 const router = createRouter({
